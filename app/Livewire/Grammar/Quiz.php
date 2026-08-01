@@ -47,7 +47,8 @@ class Quiz extends Component
         }
 
         $this->score = $correctCount;
-        $this->passed = ($correctCount === $totalQuestions); // Must get 100% to pass
+        $percentage = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
+        $this->passed = ($percentage >= 70); // Must get 70% to pass
 
         QuizAttempt::create([
             'grammar_lesson_id' => $this->lesson->id,

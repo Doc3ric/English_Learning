@@ -48,9 +48,10 @@ class Index extends Component
         $completedLessons = GrammarLesson::where('is_completed', true)->pluck('title')->toArray();
         $completedStr = empty($completedLessons) ? 'None' : implode(', ', $completedLessons);
 
-        $prompt = "You are an expert English grammar teacher. Create a grammar lesson for a student at the {$level} level.
+        $prompt = "You are an expert English grammar teacher. Create a grammar lesson for a student at the strictly {$level} level of proficiency.
 The student has already completed the following lessons: {$completedStr}.
 Please provide the next logical grammar topic that builds upon their current knowledge.
+Make absolutely sure the vocabulary, complexity, and grammar explanation are tailored specifically for the {$level} level.
 Return the response strictly as a JSON object matching this structure (do NOT wrap in markdown code blocks, just raw JSON):
 {
     \"title\": \"Lesson Title\",

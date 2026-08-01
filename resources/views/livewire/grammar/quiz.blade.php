@@ -57,7 +57,7 @@
                     </div>
                     <h2 class="text-3xl font-bold text-slate-100 mb-2">Keep Practicing</h2>
                     <p class="text-red-400 font-medium text-lg mb-6">Score: {{ $score }} / {{ $lesson->questions->count() }}</p>
-                    <p class="text-slate-400 mb-8">You need 100% to pass. Review the material and try again.</p>
+                    <p class="text-slate-400 mb-8">You need 70% or higher to pass. Review the material and try again.</p>
                     <button wire:click="retry" class="inline-block bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-8 rounded-full transition-colors border border-slate-700">
                         Retry Quiz
                     </button>

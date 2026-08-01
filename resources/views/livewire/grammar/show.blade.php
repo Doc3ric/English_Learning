@@ -77,7 +77,7 @@
             <a href="{{ route('grammar.quiz', $lesson->id) }}" class="inline-block bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-lg font-bold py-4 px-12 rounded-full transition-colors shadow-lg shadow-emerald-900/50">
                 Take the Quiz
             </a>
-            <p class="text-slate-500 text-sm mt-3">{{ $lesson->questions->count() }} questions. Score 100% to pass!</p>
+            <p class="text-slate-500 text-sm mt-3">{{ $lesson->questions->count() }} questions. Score 70% or higher to pass!</p>
         @else
             <p class="text-slate-500 p-4 border border-slate-800 border-dashed rounded bg-slate-900/50">Add some questions before you can take the quiz.</p>
         @endif
