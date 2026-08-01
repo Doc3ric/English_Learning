@@ -10,10 +10,12 @@ class Review extends Component
 {
     public function getReviewWordsProperty()
     {
-        // Words added in the last 7 days, not yet mastered, but have an example sentence
+        // Words added in the last 7 days, not yet mastered, but have an example sentence.
+        // Importantly, only show words from *previous* days (not today's words).
         return Vocabulary::where('is_mastered', false)
             ->whereNotNull('example_sentence')
-            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->where('created_at', '<', Carbon::today())
+            ->where('created_at', '>=', Carbon::today()->subDays(7))
             ->get();
     }
 

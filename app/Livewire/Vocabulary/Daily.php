@@ -25,6 +25,11 @@ class Daily extends Component
 
     public function saveExample($id, $sentence)
     {
+        $sentence = trim($sentence);
+        if (empty($sentence)) {
+            return; // Prevent saving empty sentences
+        }
+
         $word = Vocabulary::find($id);
         if ($word) {
             $word->update(['example_sentence' => $sentence]);
