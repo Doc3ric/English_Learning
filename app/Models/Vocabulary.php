@@ -16,6 +16,12 @@ class Vocabulary extends Model
         'antonyms',
         'personal_note',
         'is_favorite',
-        'is_mastered'
+        'is_mastered',
+        'source_reading_article_id'
     ];
+
+    public function readingArticle()
+    {
+        return $this->belongsTo(ReadingArticle::class, 'source_reading_article_id');
+    }
 }

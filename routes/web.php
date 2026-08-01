@@ -16,6 +16,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/grammar/{id}', \App\Livewire\Grammar\Show::class)->name('grammar.show');
     Route::get('/grammar/{id}/quiz', \App\Livewire\Grammar\Quiz::class)->name('grammar.quiz');
     
+    Route::get('/reading', \App\Livewire\Reading\Index::class)->name('reading');
+    Route::get('/reading/create', \App\Livewire\Reading\Form::class)->name('reading.create');
+    Route::get('/reading/{id}/questions', \App\Livewire\Reading\QuestionsForm::class)->name('reading.questions.create');
+    Route::get('/reading/{id}/practice', \App\Livewire\Reading\Practice::class)->name('reading.practice');
+    Route::get('/reading/{id}/quiz', \App\Livewire\Reading\Quiz::class)->name('reading.quiz');
+    
     // Auth logic
     Route::post('/logout', function () {
         Auth::logout();
