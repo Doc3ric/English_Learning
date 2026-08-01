@@ -5,10 +5,27 @@
 
     <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
         <p class="text-slate-400">Master grammar step by step. Complete a lesson and its quiz to unlock the next one.</p>
-        <button wire:click="$toggle('showAddForm')" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-medium py-2 px-4 rounded-md transition-colors border border-slate-700 text-sm">
-            {{ $showAddForm ? 'Cancel' : '+ Add Lesson' }}
-        </button>
+        <div class="flex gap-3">
+            <button wire:click="$toggle('showAddForm')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors border border-slate-700 text-sm">
+                {{ $showAddForm ? 'Cancel Manual' : 'Add Manual' }}
+            </button>
+            @if($nextSlotAvailable)
+                <button wire:click="generateNextLesson" wire:loading.attr="disabled" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-2 px-4 rounded-md transition-colors text-sm shadow flex items-center gap-2">
+                    <svg wire:loading wire:target="generateNextLesson" class="animate-spin h-4 w-4 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Generate Next Lesson</span>
+                </button>
+            @endif
+        </div>
     </div>
+
+    @if (session()->has('message'))
+        <div class="mb-6 p-3 rounded bg-emerald-900/20 border border-emerald-500/30 text-emerald-400 text-sm">
+            {{ session('message') }}
+        </div>
+    @endif
 
     @if (session()->has('error'))
         <div class="mb-6 p-3 rounded bg-red-900/20 border border-red-500/30 text-red-400 text-sm">
@@ -18,7 +35,7 @@
 
     @if($showAddForm)
         <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-8">
-            <h3 class="text-lg font-semibold text-slate-100 mb-4">Add New Lesson</h3>
+            <h3 class="text-lg font-semibold text-slate-100 mb-4">Add Manual Lesson</h3>
             <form wire:submit="save" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Lesson Title</label>
@@ -44,7 +61,12 @@
                 </div>
                 <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg border {{ $lesson->is_completed ? 'border-emerald-500/30 bg-slate-900' : ($isUnlocked ? 'border-slate-600 bg-slate-900' : 'border-slate-800 bg-slate-950 opacity-60') }}">
                     <div class="flex items-center justify-between mb-1">
-                        <h4 class="font-bold {{ $isUnlocked ? 'text-slate-100' : 'text-slate-500' }}">{{ $lesson->title }}</h4>
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold {{ $isUnlocked ? 'text-slate-100' : 'text-slate-500' }}">{{ $lesson->title }}</h4>
+                            @if($lesson->is_generated)
+                                <span class="bg-indigo-900/50 text-indigo-400 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border border-indigo-500/30">AI Generated</span>
+                            @endif
+                        </div>
                         @if($lesson->is_completed)
                             <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">Completed</span>
                         @elseif(!$isUnlocked)
@@ -64,7 +86,13 @@
                 </div>
             </div>
         @empty
-            <div class="text-center text-slate-500 py-12">No grammar lessons added yet.</div>
+            <div class="text-center text-slate-500 py-12">
+                <p class="mb-4">No grammar lessons yet.</p>
+                <button wire:click="generateNextLesson" wire:loading.attr="disabled" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 px-8 rounded-full transition-colors shadow-lg">
+                    <span wire:loading.remove wire:target="generateNextLesson">Start First AI Lesson</span>
+                    <span wire:loading wire:target="generateNextLesson">Generating...</span>
+                </button>
+            </div>
         @endforelse
     </div>
 </div>
