@@ -21,7 +21,7 @@
                 <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-4">Learning</p>
                 <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Dashboard</a>
                 <a href="{{ route('vocabulary') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('vocabulary') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Vocabulary</a>
-                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Grammar</a>
+                <a href="{{ route('grammar') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('grammar*') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Grammar</a>
                 <a href="{{ route('mistakes') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('mistakes') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Mistakes</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Reading</a>
                 
