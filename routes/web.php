@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/reading/{id}/practice', \App\Livewire\Reading\Practice::class)->name('reading.practice');
     Route::get('/reading/{id}/quiz', \App\Livewire\Reading\Quiz::class)->name('reading.quiz');
     
+    Route::get('/timer', \App\Livewire\Timer\Index::class)->name('timer');
+    
     // Auth logic
     Route::post('/logout', function () {
         Auth::logout();

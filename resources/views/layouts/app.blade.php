@@ -27,7 +27,7 @@
                 
                 <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Practice & Track</p>
                 <a href="{{ route('journal') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('journal') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Journal</a>
-                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Study Timer</a>
+                <a href="{{ route('timer') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timer') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Study Timer</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Timeline</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Stats & Goals</a>
             </nav>
