@@ -33,6 +33,7 @@ class Daily extends Component
         $word = Vocabulary::find($id);
         if ($word) {
             $word->update(['example_sentence' => $sentence]);
+            \App\Services\AchievementService::check('vocabulary', $this);
         }
     }
 

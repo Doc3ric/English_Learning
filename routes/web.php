@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/timer', \App\Livewire\Timer\Index::class)->name('timer');
     Route::get('/timeline', \App\Livewire\Timeline\Index::class)->name('timeline');
     Route::get('/stats', \App\Livewire\Stats\Index::class)->name('stats');
+    Route::get('/achievements', \App\Livewire\Achievements\Index::class)->name('achievements');
     
     // Auth logic
     Route::post('/logout', function () {

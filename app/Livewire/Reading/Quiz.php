@@ -75,6 +75,13 @@ class Quiz extends Component
             session()->forget(['reading_start_time', 'reading_article_id']);
         }
         
+        \App\Services\AchievementService::check('reading', $this);
+
+        // Flash message or emit event based on score
+        if ($this->score >= 70) {
+            session()->flash('success', "Great job! You scored {$this->score}% and read at {$this->wpm} WPM.");
+        }
+        
         ReadingAttempt::create([
             'reading_article_id' => $this->article->id,
             'score' => $this->score,

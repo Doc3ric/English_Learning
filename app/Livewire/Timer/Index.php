@@ -19,11 +19,16 @@ class Index extends Component
 
     public function saveSession($durationSeconds)
     {
-        StudySession::create([
-            'duration_seconds' => (int) $durationSeconds,
-            'activity_type' => $this->activityType,
-            'notes' => $this->notes ?: null,
-        ]);
+        if ($durationSeconds >= 15) {
+            StudySession::create([
+                'duration_seconds' => (int) $durationSeconds,
+                'activity_type' => $this->activityType,
+                'notes' => $this->notes ?: null,
+            ]);
+            
+            \App\Services\AchievementService::check('time', $this);
+            \App\Services\AchievementService::check('streak', $this);
+        }
         
         $this->reset('notes');
         

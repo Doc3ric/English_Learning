@@ -36,6 +36,8 @@ class Index extends Component
             ]);
         }
 
+        \App\Services\AchievementService::check('journal', $this);
+
         $this->content = '';
         session()->flash('message', 'Journal entry saved!');
     }

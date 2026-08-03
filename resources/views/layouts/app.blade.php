@@ -30,14 +30,16 @@
                 <a href="{{ route('timer') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timer') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Study Timer</a>
                 <a href="{{ route('timeline') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timeline') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Timeline</a>
                 <a href="{{ route('stats') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('stats') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Stats & Goals</a>
+                <a href="{{ route('achievements') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('achievements') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Achievements</a>
             </nav>
 
-            <div class="p-4 border-t border-slate-800">
+            <!-- User Info (Bottom) -->
+            <div class="mt-auto pt-6 border-t border-slate-800 p-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs border border-slate-700">Me</div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-slate-200 truncate">Learner</p>
+                    <div class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-sm font-medium text-slate-300">
+                        Me
                     </div>
+                    <div class="text-sm font-medium text-slate-300">Learner</div>
                 </div>
             </div>
         </aside>
@@ -56,11 +58,44 @@
             </header>
             
             <div class="flex-1 overflow-y-auto p-8">
-                <div class="max-w-5xl mx-auto">
-                    {{ $slot }}
-                </div>
+                {{ $slot }}
             </div>
         </main>
+    </div>
+
+    <!-- Achievement Toast Notification -->
+    <div x-data="{ show: false, title: '', icon: '' }"
+         @achievement-unlocked.window="
+            title = $event.detail.title;
+            icon = $event.detail.icon;
+            show = true;
+            setTimeout(() => { show = false; }, 4000);
+         "
+         class="fixed bottom-4 right-4 z-50">
+        <div x-show="show" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="translate-y-10 opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="translate-y-0 opacity-100"
+             x-transition:leave-end="translate-y-10 opacity-0"
+             class="bg-slate-800 border-l-4 border-amber-500 rounded-lg shadow-2xl p-4 flex items-start gap-4 max-w-sm"
+             style="display: none;">
+            
+            <div class="bg-amber-500/20 text-amber-500 rounded-full p-2 shrink-0">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            </div>
+            
+            <div>
+                <h4 class="text-amber-400 font-bold text-sm uppercase tracking-wider mb-1">Achievement Unlocked!</h4>
+                <p class="text-slate-200 font-medium" x-text="title"></p>
+            </div>
+            
+            <button @click="show = false" class="text-slate-500 hover:text-slate-300 transition-colors ml-auto">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
 
         @livewireScripts
     </body>

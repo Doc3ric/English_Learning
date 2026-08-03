@@ -43,6 +43,8 @@ class Index extends Component
                 'reason' => $this->reason,
                 'category' => $this->category,
             ]);
+
+            \App\Services\AchievementService::check('mistakes', $this);
         }
 
         $this->resetForm();
