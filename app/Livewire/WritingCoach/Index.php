@@ -56,7 +56,21 @@ class Index extends Component
 
     public function mount()
     {
-        $this->prompt = self::PROMPTS[date('z') % count(self::PROMPTS)];
+        $basePrompt = self::PROMPTS[date('z') % count(self::PROMPTS)];
+
+        // 12C: if there's a clear top weakness, occasionally target it
+        $topWeakness = \App\Models\Mistake::selectRaw('category, count(*) as total')
+            ->where('created_at', '>=', \Carbon\Carbon::now()->subDays(30))
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->first();
+
+        if ($topWeakness && $topWeakness->total >= 3) {
+            // Wrap the base prompt with a weakness-aware instruction
+            $this->prompt = $basePrompt . ' (Focus on using ' . $topWeakness->category . ' correctly — this is your current area to improve.)';
+        } else {
+            $this->prompt = $basePrompt;
+        }
     }
 
     public function updatedUserResponse()

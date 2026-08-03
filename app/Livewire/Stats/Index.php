@@ -9,6 +9,7 @@ use App\Models\GrammarLesson;
 use App\Models\ReadingAttempt;
 use App\Models\JournalEntry;
 use App\Models\StudySession;
+use App\Models\Mistake;
 use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 
@@ -125,12 +126,23 @@ class Index extends Component
             'study_time' => round(StudySession::sum('duration_seconds') / 60),
         ];
 
+        // 12C: Weakness Analysis — mistakes by category, last 30 days
+        $weaknesses = Mistake::selectRaw('category, count(*) as total')
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->get();
+
+        $topWeakness = $weaknesses->first();
+
         return view('livewire.stats.index', [
-            'progress' => $progress,
-            'overall' => $overall,
-            'streak' => $this->calculateStreak(),
-            'startOfWeek' => $startOfWeek->format('M d'),
-            'endOfWeek' => $endOfWeek->format('M d'),
+            'progress'     => $progress,
+            'overall'      => $overall,
+            'streak'       => $this->calculateStreak(),
+            'startOfWeek'  => $startOfWeek->format('M d'),
+            'endOfWeek'    => $endOfWeek->format('M d'),
+            'weaknesses'   => $weaknesses,
+            'topWeakness'  => $topWeakness,
         ]);
     }
 }

@@ -48,8 +48,22 @@ class Index extends Component
         $completedLessons = GrammarLesson::where('is_completed', true)->pluck('title')->toArray();
         $completedStr = empty($completedLessons) ? 'None' : implode(', ', $completedLessons);
 
+        // 12C: inject top weakness categories from last 30 days
+        $topWeaknesses = \App\Models\Mistake::selectRaw('category, count(*) as total')
+            ->where('created_at', '>=', \Carbon\Carbon::now()->subDays(30))
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->limit(2)
+            ->pluck('category')
+            ->toArray();
+
+        $weaknessStr = empty($topWeaknesses)
+            ? 'No specific weaknesses identified yet.'
+            : 'This learner frequently struggles with: ' . implode(' and ', $topWeaknesses) . '. Prioritize a lesson on whichever of these topics they have not already covered.';
+
         $prompt = "You are an expert English grammar teacher. Create a grammar lesson for a student at the strictly {$level} level of proficiency.
 The student has already completed the following lessons: {$completedStr}.
+{$weaknessStr}
 Please provide the next logical grammar topic that builds upon their current knowledge.
 Make absolutely sure the vocabulary, complexity, and grammar explanation are tailored specifically for the {$level} level.
 Return the response strictly as a JSON object matching this structure (do NOT wrap in markdown code blocks, just raw JSON):

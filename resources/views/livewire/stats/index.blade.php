@@ -191,6 +191,60 @@
         </div>
     </div>
 
+    <!-- 12C: Weakness Breakdown -->
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-8 shadow-lg">
+        <div class="flex items-start justify-between mb-6 border-b border-slate-800 pb-4">
+            <div>
+                <h3 class="text-2xl font-bold text-slate-100">Weakness Breakdown</h3>
+                <p class="text-slate-400 text-sm mt-1">Mistake categories from the last 30 days — sorted by frequency.</p>
+            </div>
+            @if($topWeakness)
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-bold shrink-0">
+                    ⚠ Top weakness: {{ $topWeakness->category }}
+                </div>
+            @endif
+        </div>
+
+        @if($weaknesses->isEmpty())
+            <div class="text-center py-8 text-slate-500">
+                <p class="text-sm">No mistakes logged in the last 30 days.</p>
+                <p class="text-xs mt-1">Submit a Writing Coach session to start tracking your weaknesses.</p>
+            </div>
+        @else
+            @php
+                $maxTotal = $weaknesses->max('total');
+                $catColors = [
+                    'Grammar'    => ['bar' => 'bg-red-500',    'text' => 'text-red-400',    'bg' => 'bg-red-500/10'],
+                    'Vocabulary' => ['bar' => 'bg-amber-500',  'text' => 'text-amber-400',  'bg' => 'bg-amber-500/10'],
+                    'Writing'    => ['bar' => 'bg-purple-500', 'text' => 'text-purple-400', 'bg' => 'bg-purple-500/10'],
+                    'Pronunciation' => ['bar' => 'bg-blue-500','text' => 'text-blue-400',   'bg' => 'bg-blue-500/10'],
+                ];
+            @endphp
+            <div class="space-y-5">
+                @foreach($weaknesses as $w)
+                    @php
+                        $pct = $maxTotal > 0 ? ($w->total / $maxTotal) * 100 : 0;
+                        $c = $catColors[$w->category] ?? ['bar' => 'bg-slate-500', 'text' => 'text-slate-400', 'bg' => 'bg-slate-500/10'];
+                    @endphp
+                    <div>
+                        <div class="flex justify-between items-center mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold {{ $c['text'] }}">{{ $w->category }}</span>
+                                @if($loop->first)
+                                    <span class="text-xs px-2 py-0.5 {{ $c['bg'] }} {{ $c['text'] }} rounded-full font-bold border border-current/20">Most Common</span>
+                                @endif
+                            </div>
+                            <span class="text-sm font-bold text-slate-300 tabular-nums">{{ $w->total }} mistake{{ $w->total > 1 ? 's' : '' }}</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                            <div class="h-3 rounded-full {{ $c['bar'] }} transition-all duration-700" style="width: {{ $pct }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
     <!-- Overall All-Time Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
