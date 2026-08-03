@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+class WritingCoachService
+{
+    public static function analyze(string $topic, string $userText): ?array
+    {
+        $prompt = <<<PROMPT
+You are an expert English writing coach. A learner has written a short response to a writing prompt. Analyze their writing carefully.
+
+Writing Prompt: "{$topic}"
+
+Learner's Response:
+"{$userText}"
+
+Your task:
+1. Correct the text: fix all grammar, spelling, word choice, and naturalness issues.
+2. Explain the key corrections in simple, encouraging language (no more than 5-6 bullet points).
+3. Score the original writing on 4 dimensions, each from 0–100:
+   - grammar_score: correctness of sentence structure, tenses, and punctuation
+   - vocabulary_score: appropriateness and range of word choices
+   - naturalness_score: how natural and fluent the English sounds to a native speaker
+   - clarity_score: how clear and easy to understand the message is
+4. Estimate the learner's CEFR level based on this writing (A1, A2, B1, B2, C1, or C2).
+
+Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text — just the JSON:
+{
+  "corrected_version": "The fully corrected version of the learner's text",
+  "explanation": "Clear bullet-point explanation of what was changed and why, written in plain English",
+  "grammar_score": 75,
+  "vocabulary_score": 60,
+  "naturalness_score": 80,
+  "clarity_score": 70,
+  "cefr_estimate": "B1"
+}
+PROMPT;
+
+        try {
+            $response = Http::withToken(env('GROQ_API_KEY'))
+                ->timeout(60)
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => 'llama-3.3-70b-versatile',
+                    'response_format' => ['type' => 'json_object'],
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are an API that outputs strict JSON only. Never include markdown formatting, code blocks, or any text outside the JSON object.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt
+                        ]
+                    ]
+                ]);
+
+            if ($response->successful()) {
+                $raw = $response->json()['choices'][0]['message']['content'] ?? null;
+                if (!$raw) return null;
+
+                $data = json_decode($raw, true);
+                if (!$data) return null;
+
+                // Validate all required keys are present
+                $required = ['corrected_version', 'explanation', 'grammar_score', 'vocabulary_score', 'naturalness_score', 'clarity_score', 'cefr_estimate'];
+                foreach ($required as $key) {
+                    if (!isset($data[$key])) return null;
+                }
+
+                // Clamp scores to 0-100
+                foreach (['grammar_score', 'vocabulary_score', 'naturalness_score', 'clarity_score'] as $score) {
+                    $data[$score] = max(0, min(100, (int) $data[$score]));
+                }
+
+                return $data;
+            }
+
+            Log::error('WritingCoachService: Groq API error', ['body' => $response->body()]);
+            return null;
+        } catch (\Exception $e) {
+            Log::error('WritingCoachService exception: ' . $e->getMessage());
+            return null;
+        }
+    }
+}

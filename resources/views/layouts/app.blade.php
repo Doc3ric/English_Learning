@@ -19,6 +19,13 @@
 
             <nav class="flex-1 overflow-y-auto p-4 space-y-1">
                 <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-4">Learning</p>
+                {{-- Primary daily action --}}
+                <a href="{{ route('writing-coach') }}" class="block px-3 py-2.5 rounded-md text-sm font-semibold transition-colors mb-2 {{ request()->routeIs('writing-coach') ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20' : 'bg-emerald-600/10 text-emerald-400 border border-emerald-600/30 hover:bg-emerald-600/20' }}">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        ✍ Writing Coach
+                    </div>
+                </a>
                 <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Dashboard</a>
                 <a href="{{ route('vocabulary') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('vocabulary') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Vocabulary</a>
                 <a href="{{ route('grammar') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('grammar*') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Grammar</a>
