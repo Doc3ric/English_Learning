@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reading/{id}/quiz', \App\Livewire\Reading\Quiz::class)->name('reading.quiz');
     
     Route::get('/timer', \App\Livewire\Timer\Index::class)->name('timer');
+    Route::get('/timeline', \App\Livewire\Timeline\Index::class)->name('timeline');
     Route::get('/stats', \App\Livewire\Stats\Index::class)->name('stats');
     
     // Auth logic
