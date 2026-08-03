@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Mistake extends Model
 {
-    protected $fillable = ['wrong_text', 'correct_text', 'reason', 'category', 'times_reviewed'];
+    protected $fillable = ['wrong_text', 'correct_text', 'reason', 'category', 'times_reviewed', 'source'];
 }

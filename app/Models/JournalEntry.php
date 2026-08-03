@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class JournalEntry extends Model
 {
-    protected $fillable = ['content', 'word_count'];
+    protected $fillable = ['title', 'content', 'word_count', 'source'];
 }

@@ -79,9 +79,14 @@
                 @forelse($mistakes as $mistake)
                     <div class="bg-slate-900 border border-slate-800 rounded-lg p-5 group">
                         <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block px-2 py-1 bg-slate-950 text-xs font-medium text-slate-400 rounded border border-slate-800 capitalize">
-                                {{ $mistake->category }}
-                            </span>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-block px-2 py-1 bg-slate-950 text-xs font-medium text-slate-400 rounded border border-slate-800 capitalize">
+                                    {{ $mistake->category }}
+                                </span>
+                                @if($mistake->source === 'writing_coach')
+                                    <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 rounded-full">✍ Writing Coach</span>
+                                @endif
+                            </div>
                             <div class="flex items-center gap-3">
                                 <span class="text-xs text-slate-500">Reviewed {{ $mistake->times_reviewed }} times</span>
                                 <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -15,10 +15,13 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 flex flex-col md:flex-row gap-6" wire:key="word-{{ $word->id }}">
                     <!-- Word Info -->
                     <div class="md:w-1/3">
-                        <div class="flex items-baseline gap-2 mb-2">
+                        <div class="flex items-baseline gap-2 mb-2 flex-wrap">
                             <h4 class="text-2xl font-bold text-slate-100">{{ $word->word }}</h4>
                             @if($word->part_of_speech)
                                 <span class="text-xs font-medium text-slate-500 italic">{{ $word->part_of_speech }}</span>
+                            @endif
+                            @if($word->source === 'writing_coach')
+                                <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 rounded-full">✍ From Writing Coach</span>
                             @endif
                         </div>
                         @if($word->pronunciation)

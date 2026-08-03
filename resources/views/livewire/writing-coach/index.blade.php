@@ -108,6 +108,28 @@
             </button>
         </div>
 
+        {{-- 12B: Auto-population summary --}}
+        <div class="flex flex-wrap gap-3">
+            @if($journalSaved)
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Saved to Journal
+                </div>
+            @endif
+            @if($vocabAdded > 0)
+                <a href="{{ route('vocabulary') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-xs font-semibold hover:bg-purple-500/20 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    {{ $vocabAdded }} word{{ $vocabAdded > 1 ? 's' : '' }} added to Vocabulary
+                </a>
+            @endif
+            @if($mistakesAdded > 0)
+                <a href="{{ route('mistakes') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    {{ $mistakesAdded }} mistake{{ $mistakesAdded > 1 ? 's' : '' }} logged
+                </a>
+            @endif
+        </div>
+
         {{-- Score cards --}}
         @php
             $scores = [

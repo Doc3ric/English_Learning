@@ -6,6 +6,9 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Services\WritingCoachService;
 use App\Models\WritingSession;
+use App\Models\JournalEntry;
+use App\Models\Vocabulary;
+use App\Models\Mistake;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('layouts.app')]
@@ -22,6 +25,11 @@ class Index extends Component
     public ?array $result = null;
     public ?int $sessionId = null;
     public ?string $errorMessage = null;
+
+    // 12B auto-population counts (for results display)
+    public int $vocabAdded = 0;
+    public int $mistakesAdded = 0;
+    public bool $journalSaved = false;
 
     // Rewrite
     public bool $showRewriteBox = false;
@@ -103,6 +111,54 @@ class Index extends Component
 
         $this->result = $result;
         $this->sessionId = $session->id;
+
+        // ---- 12B: Auto-populate existing modules ----
+
+        // 1. Journal — every writing session is a journal entry
+        JournalEntry::create([
+            'title'      => $this->prompt,
+            'content'    => $this->userResponse,
+            'word_count' => $this->wordCount,
+            'source'     => 'writing_coach',
+        ]);
+        $this->journalSaved = true;
+
+        // 2. Vocabulary — suggested words from AI
+        $this->vocabAdded = 0;
+        foreach (($result['suggested_vocabulary'] ?? []) as $v) {
+            $word = trim($v['word'] ?? '');
+            if (!$word) continue;
+            // Avoid exact duplicates
+            $exists = Vocabulary::whereRaw('LOWER(word) = ?', [strtolower($word)])->exists();
+            if (!$exists) {
+                Vocabulary::create([
+                    'word'         => $word,
+                    'meaning'      => $v['meaning'] ?? '',
+                    'part_of_speech' => $v['part_of_speech'] ?? '',
+                    'source'       => 'writing_coach',
+                ]);
+                $this->vocabAdded++;
+            }
+        }
+
+        // 3. Mistakes — each mistake found by AI
+        $this->mistakesAdded = 0;
+        $allowedCategories = ['Grammar', 'Vocabulary', 'Writing'];
+        foreach (($result['mistakes_found'] ?? []) as $m) {
+            $wrongText = trim($m['wrong_text'] ?? '');
+            $correctText = trim($m['correct_text'] ?? '');
+            if (!$wrongText || !$correctText) continue;
+            $cat = in_array($m['category'] ?? '', $allowedCategories) ? $m['category'] : 'Grammar';
+            Mistake::create([
+                'wrong_text'   => $wrongText,
+                'correct_text' => $correctText,
+                'reason'       => $m['reason'] ?? '',
+                'category'     => $cat,
+                'source'       => 'writing_coach',
+            ]);
+            $this->mistakesAdded++;
+        }
+
         $this->state = 'results';
     }
 

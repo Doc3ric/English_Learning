@@ -26,6 +26,8 @@ Your task:
    - naturalness_score: how natural and fluent the English sounds to a native speaker
    - clarity_score: how clear and easy to understand the message is
 4. Estimate the learner's CEFR level based on this writing (A1, A2, B1, B2, C1, or C2).
+5. Suggest 2–4 vocabulary words: words the learner could have used (but didn't) to make the writing more precise or advanced, PLUS any genuinely useful words from your corrected version. For each, provide the word, its meaning, and its part of speech.
+6. List all specific mistakes found in the original text. For each mistake provide: the wrong text as written, the correct replacement, a short reason, and the category (must be exactly one of: Grammar, Vocabulary, Writing).
 
 Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text — just the JSON:
 {
@@ -35,7 +37,15 @@ Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text �
   "vocabulary_score": 60,
   "naturalness_score": 80,
   "clarity_score": 70,
-  "cefr_estimate": "B1"
+  "cefr_estimate": "B1",
+  "suggested_vocabulary": [
+    {"word": "punctual", "meaning": "happening or arriving at the agreed or proper time", "part_of_speech": "adjective"},
+    {"word": "deadline", "meaning": "the latest time by which something must be completed", "part_of_speech": "noun"}
+  ],
+  "mistakes_found": [
+    {"wrong_text": "I forget", "correct_text": "I forgot", "reason": "Past simple is needed for a completed action in the past.", "category": "Grammar"},
+    {"wrong_text": "very disappoint", "correct_text": "very disappointed", "reason": "The adjective form 'disappointed' is required after a verb.", "category": "Grammar"}
+  ]
 }
 PROMPT;
 
@@ -72,7 +82,15 @@ PROMPT;
                     $data['corrected_version'] = implode("\n", $data['corrected_version']);
                 }
 
-                // Validate all required keys are present
+                // Ensure new array fields exist even if Groq omits them
+                if (!isset($data['suggested_vocabulary']) || !is_array($data['suggested_vocabulary'])) {
+                    $data['suggested_vocabulary'] = [];
+                }
+                if (!isset($data['mistakes_found']) || !is_array($data['mistakes_found'])) {
+                    $data['mistakes_found'] = [];
+                }
+
+                // Validate core required keys are present
                 $required = ['corrected_version', 'explanation', 'grammar_score', 'vocabulary_score', 'naturalness_score', 'clarity_score', 'cefr_estimate'];
                 foreach ($required as $key) {
                     if (!isset($data[$key])) return null;

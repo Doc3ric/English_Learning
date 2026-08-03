@@ -17,6 +17,7 @@ class Vocabulary extends Model
         'personal_note',
         'is_favorite',
         'is_mastered',
+        'source',
         'source_reading_article_id'
     ];
 
