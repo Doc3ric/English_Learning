@@ -64,6 +64,14 @@ PROMPT;
                 $data = json_decode($raw, true);
                 if (!$data) return null;
 
+                // Normalize: Groq sometimes returns explanation as an array of bullet strings
+                if (is_array($data['explanation'])) {
+                    $data['explanation'] = implode("\n", $data['explanation']);
+                }
+                if (is_array($data['corrected_version'])) {
+                    $data['corrected_version'] = implode("\n", $data['corrected_version']);
+                }
+
                 // Validate all required keys are present
                 $required = ['corrected_version', 'explanation', 'grammar_score', 'vocabulary_score', 'naturalness_score', 'clarity_score', 'cefr_estimate'];
                 foreach ($required as $key) {
