@@ -13,7 +13,11 @@ class Index extends Component
 {
     public function render()
     {
-        $allAchievements = collect(AchievementService::all());
+        $allAchievements = collect(AchievementService::all())->map(function($item, $key) {
+            $item['key'] = $key;
+            return $item;
+        });
+        
         $unlockedKeys = AchievementUnlock::where('user_id', Auth::id())->pluck('achievement_key')->toArray();
 
         return view('livewire.achievements.index', [

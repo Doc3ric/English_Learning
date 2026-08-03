@@ -21,9 +21,9 @@
             <div class="mb-10">
                 <h3 class="text-xl font-bold text-slate-200 capitalize mb-6 border-b border-slate-800 pb-2">{{ $cat }}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    @foreach($achievements[$cat] as $key => $ach)
+                    @foreach($achievements[$cat] as $ach)
                         @php
-                            $isUnlocked = in_array($key, $unlockedKeys);
+                            $isUnlocked = in_array($ach['key'], $unlockedKeys);
                         @endphp
                         <div class="relative p-6 rounded-lg border {{ $isUnlocked ? 'bg-slate-800/80 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'bg-slate-900/50 border-slate-800 opacity-60 grayscale' }} flex flex-col items-center text-center transition-all duration-300">
                             
