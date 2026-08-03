@@ -56,7 +56,7 @@ class Dashboard extends Component
         
         // Mission Checklist
         $mission = [
-            'vocab' => Vocabulary::whereDate('created_at', $today)->exists(),
+            'vocab' => Vocabulary::whereNotNull('example_sentence')->whereDate('updated_at', $today)->exists(),
             'grammar' => GrammarLesson::where('is_completed', true)->whereDate('updated_at', $today)->exists(),
             'reading' => ReadingAttempt::whereDate('created_at', $today)->exists(),
             'journal' => JournalEntry::whereDate('created_at', $today)->exists(),
@@ -80,7 +80,7 @@ class Dashboard extends Component
         ]);
 
         $progress = [
-            'vocabulary' => Vocabulary::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count(),
+            'vocabulary' => Vocabulary::whereNotNull('example_sentence')->whereBetween('updated_at', [$startOfWeek, $endOfWeek])->count(),
             'grammar' => GrammarLesson::where('is_completed', true)->whereBetween('updated_at', [$startOfWeek, $endOfWeek])->count(),
             'reading' => ReadingAttempt::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count(),
             'writing' => JournalEntry::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count(),
