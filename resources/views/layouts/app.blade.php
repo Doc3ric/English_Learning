@@ -29,7 +29,7 @@
                 <a href="{{ route('journal') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('journal') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Journal</a>
                 <a href="{{ route('timer') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timer') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Study Timer</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Timeline</a>
-                <a href="#" class="block px-3 py-2 rounded-md text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition-colors">Stats & Goals</a>
+                <a href="{{ route('stats') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('stats') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Stats & Goals</a>
             </nav>
 
             <div class="p-4 border-t border-slate-800">

@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- Timer Section -->
-        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-lg p-10 text-center shadow-lg relative overflow-hidden" x-data="pomodoroTimer(@entangle('durationMinutes').live)">
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-lg p-10 text-center shadow-lg relative overflow-hidden" x-data="pomodoroTimer(25)">
             
             <!-- Progress Background -->
             <div class="absolute bottom-0 left-0 right-0 bg-slate-800/50 -z-0 transition-all duration-1000 ease-linear" :style="`height: ${((totalSeconds - timeLeft) / totalSeconds) * 100}%`"></div>
@@ -31,7 +31,7 @@
                 </div>
 
                 <!-- Controls -->
-                <div class="flex justify-center gap-6 mb-10 h-16">
+                <div class="flex justify-center flex-wrap gap-6 mb-10">
                     <button x-show="!isRunning" @click="startTimer" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-2xl font-bold py-3 px-14 rounded-full transition-colors shadow-lg shadow-emerald-900/50 w-full sm:w-auto">
                         Start Focus
                     </button>

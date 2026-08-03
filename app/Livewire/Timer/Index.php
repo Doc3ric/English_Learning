@@ -10,7 +10,6 @@ use Livewire\Attributes\Layout;
 class Index extends Component
 {
     public $activityType = 'General';
-    public $durationMinutes = 25; // default 25 mins
     public $notes = '';
 
     public function getRecentSessionsProperty()
