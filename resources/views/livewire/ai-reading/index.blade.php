@@ -261,7 +261,6 @@
                 </ul>
             </div>
             @endif
-            @endif
 
             {{-- 13D: Extraction Confirmations --}}
             @if($vocabAddedCount > 0 || $mistakesLoggedCount > 0)
