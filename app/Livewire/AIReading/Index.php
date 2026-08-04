@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 #[Layout('layouts.app')]
 class Index extends Component
 {
-    // States: 'idle', 'loading', 'reading'
+    // States: 'idle' | 'loading' | 'reading' | 'summarizing' | 'summary_results'
     public string $state = 'idle';
 
     // Today's topic and resolved CEFR level
@@ -23,6 +23,13 @@ class Index extends Component
     public ?array $article = null;
     public ?int $sessionId = null;
     public ?string $errorMessage = null;
+
+    // 13B — Summary
+    public string $summaryResponse = '';
+    public int $summaryWordCount = 0;
+    public bool $showSummaryWarning = false;
+    public ?array $summaryResult = null;
+    public ?string $summaryError = null;
 
     /**
      * 14 topics — deliberately different subjects and a +6 day offset
@@ -47,17 +54,14 @@ class Index extends Component
 
     public function mount()
     {
-        // Topic: rotating list with +6 offset to avoid Writing Coach collision
         $this->topic = self::TOPICS[(date('z') + 6) % count(self::TOPICS)];
 
-        // CEFR level: Option A — user profile level, fallback to latest writing session
-        $user = Auth::user();
+        $user         = Auth::user();
         $profileLevel = strtoupper(trim($user->level ?? ''));
 
         if ($profileLevel) {
             $this->cefrLevel = $profileLevel;
         } else {
-            // Fallback: most recent writing session estimate
             $latest = WritingSession::where('user_id', $user->id)
                 ->latest()
                 ->value('cefr_estimate');
@@ -65,11 +69,13 @@ class Index extends Component
         }
     }
 
+    // ── 13A actions ──────────────────────────────────────────────────────────
+
     public function generate()
     {
         if ($this->state === 'loading') return;
 
-        $this->state       = 'loading';
+        $this->state        = 'loading';
         $this->errorMessage = null;
 
         $result = AIReadingService::generate($this->topic, $this->cefrLevel);
@@ -80,7 +86,6 @@ class Index extends Component
             return;
         }
 
-        // Persist to DB
         $session = ReadingSession::create([
             'user_id'             => Auth::id(),
             'topic'               => $this->topic,
@@ -96,9 +101,74 @@ class Index extends Component
         $this->state     = 'reading';
     }
 
+    // ── 13B actions ──────────────────────────────────────────────────────────
+
+    public function startSummary()
+    {
+        $this->summaryResponse    = '';
+        $this->summaryWordCount   = 0;
+        $this->showSummaryWarning = false;
+        $this->summaryError       = null;
+        $this->state              = 'summarizing';
+    }
+
+    public function updatedSummaryResponse()
+    {
+        $text = trim(strip_tags($this->summaryResponse));
+        $this->summaryWordCount   = $text ? str_word_count($text) : 0;
+        $this->showSummaryWarning = $this->summaryWordCount > 0 && $this->summaryWordCount < 30;
+    }
+
+    public function submitSummary()
+    {
+        $this->validate([
+            'summaryResponse' => 'required|string|min:10',
+        ], [
+            'summaryResponse.required' => 'Please write your summary before submitting.',
+            'summaryResponse.min'      => 'Please write a little more.',
+        ]);
+
+        $this->summaryError = null;
+
+        if (!$this->article || !$this->sessionId) {
+            $this->summaryError = 'Session data missing. Please generate a new article.';
+            return;
+        }
+
+        $result = AIReadingService::evaluateSummary(
+            $this->article['article'],
+            $this->summaryResponse,
+            $this->cefrLevel
+        );
+
+        if (!$result) {
+            $this->summaryError = 'The evaluation failed. Please try again.';
+            return;
+        }
+
+        // Persist back to the 13A session row
+        $session = ReadingSession::find($this->sessionId);
+        if ($session) {
+            $session->update([
+                'summary_response'       => $this->summaryResponse,
+                'summary_score'          => $result['score'],
+                'summary_feedback'       => $result['overall_feedback'],
+                'missing_ideas'          => json_encode(array_values($result['missing_ideas'] ?? [])),
+                'vocabulary_suggestions' => json_encode(array_values($result['vocabulary_suggestions'] ?? [])),
+            ]);
+        }
+
+        $this->summaryResult = $result;
+        $this->state         = 'summary_results';
+    }
+
     public function startNew()
     {
-        $this->reset(['article', 'sessionId', 'errorMessage']);
+        $this->reset([
+            'article', 'sessionId', 'errorMessage',
+            'summaryResponse', 'summaryWordCount', 'showSummaryWarning',
+            'summaryResult', 'summaryError',
+        ]);
         $this->state = 'idle';
     }
 

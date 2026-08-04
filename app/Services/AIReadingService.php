@@ -93,4 +93,112 @@ PROMPT;
             return null;
         }
     }
+
+    /**
+     * 13B: Evaluate a learner's summary against the original article.
+     *
+     * @param  string  $articleText   The full generated article
+     * @param  string  $userSummary   What the learner wrote
+     * @param  string  $cefrLevel     Learner's CEFR level (for feedback calibration)
+     * @return array|null
+     */
+    public static function evaluateSummary(string $articleText, string $userSummary, string $cefrLevel): ?array
+    {
+        $level = strtoupper(trim($cefrLevel));
+
+        $prompt = <<<PROMPT
+You are an expert English language teacher evaluating a learner's reading summary.
+
+The learner is at the {$level} CEFR level. They read the following article and then wrote a summary from memory — without looking at the article.
+
+--- ORIGINAL ARTICLE ---
+{$articleText}
+--- END OF ARTICLE ---
+
+--- LEARNER'S SUMMARY ---
+{$userSummary}
+--- END OF SUMMARY ---
+
+Evaluate the summary on these dimensions:
+1. Accuracy: Did they correctly capture the key ideas? Were there any significant misunderstandings?
+2. Completeness: What important points from the article are missing from the summary?
+3. Grammar: Are the learner's sentences grammatically correct and well-structured?
+4. Vocabulary: Could they have used more precise or advanced vocabulary? Give specific upgrade suggestions.
+5. Overall: Write an encouraging 2–3 sentence overall assessment appropriate for a {$level} learner.
+
+Return ONLY a raw JSON object — no markdown, no code blocks, just JSON:
+{
+  "score": 72,
+  "overall_feedback": "Good effort! You identified the main theme clearly. Keep practising to catch more specific details.",
+  "accuracy_feedback": "Your summary is mostly accurate. One key idea was slightly misrepresented: ...",
+  "grammar_feedback": "Your sentences are generally clear and well-structured. One small issue: ...",
+  "missing_ideas": [
+    "Music has been used as a tool for social movements and protests throughout history.",
+    "The article specifically mentioned how music connects people across cultural boundaries."
+  ],
+  "vocabulary_suggestions": [
+    "Instead of 'good', try 'significant' or 'meaningful' — these are more precise at the {$level} level.",
+    "Instead of 'show', 'demonstrate' or 'reflect' would sound more natural here."
+  ]
+}
+PROMPT;
+
+        try {
+            $response = Http::withToken(env('GROQ_API_KEY'))
+                ->timeout(60)
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model'           => 'llama-3.3-70b-versatile',
+                    'response_format' => ['type' => 'json_object'],
+                    'messages'        => [
+                        [
+                            'role'    => 'system',
+                            'content' => 'You are an expert English language teacher. Evaluate reading summaries fairly and encouragingly. Return valid JSON only.',
+                        ],
+                        [
+                            'role'    => 'user',
+                            'content' => $prompt,
+                        ],
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $raw  = $response->json()['choices'][0]['message']['content'] ?? null;
+                $data = $raw ? json_decode($raw, true) : null;
+
+                if (!$data) return null;
+
+                // Normalise arrays — Groq occasionally returns strings
+                if (is_string($data['missing_ideas'] ?? '')) {
+                    $data['missing_ideas'] = array_filter(explode("\n", $data['missing_ideas']));
+                }
+                if (is_string($data['vocabulary_suggestions'] ?? '')) {
+                    $data['vocabulary_suggestions'] = array_filter(explode("\n", $data['vocabulary_suggestions']));
+                }
+                if (!is_array($data['missing_ideas'])) {
+                    $data['missing_ideas'] = [];
+                }
+                if (!is_array($data['vocabulary_suggestions'])) {
+                    $data['vocabulary_suggestions'] = [];
+                }
+
+                // Validate required keys
+                $required = ['score', 'overall_feedback', 'accuracy_feedback', 'grammar_feedback'];
+                foreach ($required as $key) {
+                    if (!isset($data[$key])) return null;
+                }
+
+                // Clamp score
+                $data['score'] = max(0, min(100, (int) $data['score']));
+
+                return $data;
+            }
+
+            Log::error('AIReadingService::evaluateSummary Groq error', ['body' => $response->body()]);
+            return null;
+
+        } catch (\Exception $e) {
+            Log::error('AIReadingService::evaluateSummary exception: ' . $e->getMessage());
+            return null;
+        }
+    }
 }

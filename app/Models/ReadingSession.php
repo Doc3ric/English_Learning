@@ -14,6 +14,11 @@ class ReadingSession extends Model
         'article_text',
         'article_title',
         'article_word_count',
+        'summary_response',
+        'summary_score',
+        'summary_feedback',
+        'missing_ideas',
+        'vocabulary_suggestions',
     ];
 
     public function user()
