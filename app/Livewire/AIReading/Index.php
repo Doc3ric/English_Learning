@@ -67,9 +67,12 @@ class Index extends Component
         $this->topic = self::TOPICS[(date('z') + 6) % count(self::TOPICS)];
 
         $user         = Auth::user();
+        $readingLevel = strtoupper(trim($user->reading_cefr_level ?? ''));
         $profileLevel = strtoupper(trim($user->level ?? ''));
 
-        if ($profileLevel) {
+        if ($readingLevel) {
+            $this->cefrLevel = $readingLevel;
+        } elseif ($profileLevel) {
             $this->cefrLevel = $profileLevel;
         } else {
             $latest = WritingSession::where('user_id', $user->id)
@@ -96,8 +99,14 @@ class Index extends Component
             return;
         }
 
+        // Save reading_cefr_level on the user if it was not set
+        $user = Auth::user();
+        if (empty($user->reading_cefr_level)) {
+            $user->update(['reading_cefr_level' => $this->cefrLevel]);
+        }
+
         $session = ReadingSession::create([
-            'user_id'             => Auth::id(),
+            'user_id'             => $user->id,
             'topic'               => $this->topic,
             'cefr_level'          => $this->cefrLevel,
             'estimated_read_time' => $result['estimated_read_time'],
@@ -258,7 +267,60 @@ class Index extends Component
             ]);
         }
 
+        // 13E - Adaptive Difficulty Logic
+        $this->evaluateLevel();
+
         $this->state = 'quiz_results';
+    }
+
+    private function evaluateLevel()
+    {
+        $user = Auth::user();
+        
+        $recentSessions = ReadingSession::where('user_id', $user->id)
+            ->whereNotNull('quiz_score')
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        if ($recentSessions->count() < 2) return;
+
+        $levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+        $currentLevelIdx = array_search($this->cefrLevel, $levels);
+        if ($currentLevelIdx === false) return;
+
+        // Promotion: Last 3 sessions, summary >= 80 AND quiz >= 4
+        if ($recentSessions->count() >= 3) {
+            $promote = true;
+            foreach ($recentSessions as $rs) {
+                if ($rs->summary_score < 80 || $rs->quiz_score < 4) {
+                    $promote = false;
+                    break;
+                }
+            }
+            if ($promote && $currentLevelIdx < 4) { // Max C1
+                $newLevel = $levels[$currentLevelIdx + 1];
+                $user->update(['reading_cefr_level' => $newLevel]);
+                $this->cefrLevel = $newLevel;
+                return;
+            }
+        }
+
+        // Demotion: Last 2 sessions, summary < 50 OR quiz < 3
+        $lastTwo = $recentSessions->take(2);
+        $demote = true;
+        foreach ($lastTwo as $rs) {
+            if ($rs->summary_score >= 50 && $rs->quiz_score >= 3) {
+                $demote = false;
+                break;
+            }
+        }
+        if ($demote && $currentLevelIdx > 1) { // Min A2
+            $newLevel = $levels[$currentLevelIdx - 1];
+            $user->update(['reading_cefr_level' => $newLevel]);
+            $this->cefrLevel = $newLevel;
+            return;
+        }
     }
 
     public function startNew()

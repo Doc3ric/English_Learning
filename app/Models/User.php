@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'level',
+        'reading_cefr_level',
     ];
 
     /**

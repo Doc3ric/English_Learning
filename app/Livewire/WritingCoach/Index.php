@@ -64,6 +64,19 @@ class Index extends Component
     {
         $basePrompt = self::PROMPTS[date('z') % count(self::PROMPTS)];
 
+        // 13E: Reading -> Writing Connection (33% chance)
+        if (rand(1, 100) <= 33) {
+            $latestReading = \App\Models\ReadingSession::where('user_id', Auth::id())
+                ->whereNotNull('quiz_score')
+                ->latest()
+                ->first();
+
+            if ($latestReading && !empty($latestReading->topic)) {
+                $this->prompt = "Recently you read an article about '{$latestReading->topic}'. What did you find most interesting about it, or what is your opinion on the subject? Explain your view.";
+                return;
+            }
+        }
+
         // 12C: if there's a clear top weakness, occasionally target it
         $topWeakness = \App\Models\Mistake::selectRaw('category, count(*) as total')
             ->where('created_at', '>=', \Carbon\Carbon::now()->subDays(30))
