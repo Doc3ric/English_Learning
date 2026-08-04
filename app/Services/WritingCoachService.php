@@ -7,15 +7,18 @@ use Illuminate\Support\Facades\Log;
 
 class WritingCoachService
 {
-    public static function analyze(string $topic, string $userText): ?array
+    public static function analyze(string $topic, string $userText, ?string $memoryContext = null): ?array
     {
+        $memorySection = $memoryContext
+            ? "\n\n{$memoryContext}\n"
+            : '';
         $prompt = <<<PROMPT
 You are an expert English writing coach. A learner has written a short response to a writing prompt. Analyze their writing carefully.
 
 Writing Prompt: "{$topic}"
 
 Learner's Response:
-"{$userText}"
+"{$userText}"{$memorySection}
 
 Your task:
 1. Correct the text: fix all grammar, spelling, word choice, and naturalness issues.
@@ -110,5 +113,67 @@ PROMPT;
             Log::error('WritingCoachService exception: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * 12E: Rewrite the corrected text in a specific style.
+     * $style is either 'professional' or 'native'.
+     */
+    public static function rewriteInStyle(string $correctedText, string $style): ?string
+    {
+        $styleDesc = $style === 'professional'
+            ? 'formal, professional business English — precise vocabulary, clear structure, no contractions'
+            : 'natural, fluent, conversational English that sounds exactly like a native speaker — idiomatic phrases, natural rhythm, feels effortless';
+
+        $prompt = "Rewrite the following English text to sound {$styleDesc}. Keep the same meaning and approximate length. Return ONLY the rewritten text — no explanations, no labels, no extra formatting.\n\nOriginal text:\n\"{$correctedText}\"";
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withToken(env('GROQ_API_KEY'))
+                ->timeout(45)
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model'    => 'llama-3.3-70b-versatile',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are an expert English writing coach. Return only the rewritten text, nothing else.'],
+                        ['role' => 'user',   'content' => $prompt],
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $text = trim($response->json()['choices'][0]['message']['content'] ?? '');
+                // Strip any stray quotes the model might wrap around the output
+                return trim($text, '"\'');
+            }
+
+            Log::error("WritingCoachService::rewriteInStyle ({$style}) error", ['body' => $response->body()]);
+            return null;
+        } catch (\Exception $e) {
+            Log::error("WritingCoachService::rewriteInStyle exception: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 12F: Build a lightweight memory context string from the last 1-2 sessions.
+     * Returns null if no previous sessions exist.
+     */
+    public static function buildMemoryContext(int $userId): ?string
+    {
+        $recent = \App\Models\WritingSession::where('user_id', $userId)
+            ->latest()
+            ->limit(2)
+            ->get(['prompt_topic', 'user_response', 'cefr_estimate', 'created_at']);
+
+        if ($recent->isEmpty()) return null;
+
+        $lines = $recent->map(function ($s) {
+            // Summarise the response to ~20 words to keep tokens low
+            $words   = explode(' ', strip_tags($s->user_response));
+            $snippet = implode(' ', array_slice($words, 0, 20));
+            $snippet = count($words) > 20 ? $snippet . '...' : $snippet;
+            $date    = $s->created_at->diffForHumans();
+            return "- {$date}: Topic \"{$s->prompt_topic}\" — learner wrote: \"{$snippet}\" (CEFR: {$s->cefr_estimate})";
+        })->implode("\n");
+
+        return "Recent writing history for context (do NOT repeat this verbatim, use it only to feel personally connected):\n{$lines}";
     }
 }

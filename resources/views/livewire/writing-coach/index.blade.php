@@ -236,5 +236,71 @@
             @endif
         </div>
 
+        {{-- 12E: Style Rewrites --}}
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                </div>
+                <div>
+                    <p class="font-semibold text-slate-200 text-sm">See It in Another Style</p>
+                    <p class="text-slate-500 text-xs">How would your corrected text sound in a different register?</p>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-4 mb-5">
+                <button
+                    wire:click="makeProfessional"
+                    wire:loading.attr="disabled"
+                    wire:target="makeProfessional"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                    <span wire:loading.remove wire:target="makeProfessional">🏢 Make it Professional</span>
+                    <span wire:loading wire:target="makeProfessional" class="flex items-center gap-2">
+                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        Rewriting...
+                    </span>
+                </button>
+
+                <button
+                    wire:click="makeNative"
+                    wire:loading.attr="disabled"
+                    wire:target="makeNative"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                    <span wire:loading.remove wire:target="makeNative">🗣 Make it Sound Native</span>
+                    <span wire:loading wire:target="makeNative" class="flex items-center gap-2">
+                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                        Rewriting...
+                    </span>
+                </button>
+            </div>
+
+            {{-- Style comparison stack --}}
+            @if($professionalVersion || $nativeVersion)
+                <div class="space-y-4 mt-2">
+
+                    @if($professionalVersion)
+                        <div class="bg-blue-500/5 border border-blue-500/20 rounded-lg p-4">
+                            <p class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2 flex items-center gap-1.5">
+                                <span>🏢</span> Professional Version
+                            </p>
+                            <p class="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{{ $professionalVersion }}</p>
+                        </div>
+                    @endif
+
+                    @if($nativeVersion)
+                        <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-4">
+                            <p class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2 flex items-center gap-1.5">
+                                <span>🗣</span> Native Speaker Version
+                            </p>
+                            <p class="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{{ $nativeVersion }}</p>
+                        </div>
+                    @endif
+
+                </div>
+            @endif
+        </div>
+
     @endif
 </div>

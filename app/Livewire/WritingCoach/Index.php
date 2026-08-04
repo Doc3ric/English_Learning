@@ -31,10 +31,16 @@ class Index extends Component
     public int $mistakesAdded = 0;
     public bool $journalSaved = false;
 
-    // Rewrite
+    // Rewrite (self-practice)
     public bool $showRewriteBox = false;
     public string $rewriteAttempt = '';
     public bool $rewriteSaved = false;
+
+    // 12E: Style rewrites
+    public ?string $professionalVersion = null;
+    public ?string $nativeVersion = null;
+    public bool $loadingProfessional = false;
+    public bool $loadingNative = false;
 
     // Today's rotating prompt
     public string $prompt = '';
@@ -99,8 +105,11 @@ class Index extends Component
         $this->state = 'loading';
         $this->errorMessage = null;
 
-        // Call Groq
-        $result = WritingCoachService::analyze($this->prompt, $this->userResponse);
+        // 12F: Build lightweight memory context from last 1-2 sessions
+        $memoryContext = WritingCoachService::buildMemoryContext(Auth::id());
+
+        // Call Groq (now with optional memory context)
+        $result = WritingCoachService::analyze($this->prompt, $this->userResponse, $memoryContext);
 
         if (!$result) {
             $this->state = 'writing';
@@ -110,17 +119,18 @@ class Index extends Component
 
         // Save to DB
         $session = WritingSession::create([
-            'user_id' => Auth::id(),
-            'prompt_topic' => $this->prompt,
-            'user_response' => $this->userResponse,
-            'word_count' => $this->wordCount,
+            'user_id'              => Auth::id(),
+            'prompt_topic'         => $this->prompt,
+            'user_response'        => $this->userResponse,
+            'word_count'           => $this->wordCount,
             'ai_corrected_version' => $result['corrected_version'],
-            'ai_explanation' => $result['explanation'],
-            'grammar_score' => $result['grammar_score'],
-            'vocabulary_score' => $result['vocabulary_score'],
-            'naturalness_score' => $result['naturalness_score'],
-            'clarity_score' => $result['clarity_score'],
-            'cefr_estimate' => $result['cefr_estimate'],
+            'ai_explanation'       => $result['explanation'],
+            'grammar_score'        => $result['grammar_score'],
+            'vocabulary_score'     => $result['vocabulary_score'],
+            'naturalness_score'    => $result['naturalness_score'],
+            'clarity_score'        => $result['clarity_score'],
+            'cefr_estimate'        => $result['cefr_estimate'],
+            'memory_context'       => $memoryContext,
         ]);
 
         $this->result = $result;
@@ -190,9 +200,51 @@ class Index extends Component
         $this->rewriteSaved = true;
     }
 
+    // ---- 12E: Style Rewrites ----
+
+    public function makeProfessional()
+    {
+        if (!$this->result || $this->loadingProfessional) return;
+        $this->loadingProfessional = true;
+
+        $text = $this->professionalVersion = WritingCoachService::rewriteInStyle(
+            $this->result['corrected_version'], 'professional'
+        );
+
+        // Persist to DB
+        if ($text) {
+            $session = WritingSession::find($this->sessionId);
+            $session?->update(['professional_version' => $text]);
+        }
+
+        $this->loadingProfessional = false;
+    }
+
+    public function makeNative()
+    {
+        if (!$this->result || $this->loadingNative) return;
+        $this->loadingNative = true;
+
+        $text = $this->nativeVersion = WritingCoachService::rewriteInStyle(
+            $this->result['corrected_version'], 'native'
+        );
+
+        // Persist to DB
+        if ($text) {
+            $session = WritingSession::find($this->sessionId);
+            $session?->update(['native_version' => $text]);
+        }
+
+        $this->loadingNative = false;
+    }
+
     public function startNewSession()
     {
-        $this->reset(['userResponse', 'wordCount', 'showWordWarning', 'result', 'sessionId', 'errorMessage', 'showRewriteBox', 'rewriteAttempt', 'rewriteSaved']);
+        $this->reset([
+            'userResponse', 'wordCount', 'showWordWarning', 'result', 'sessionId',
+            'errorMessage', 'showRewriteBox', 'rewriteAttempt', 'rewriteSaved',
+            'professionalVersion', 'nativeVersion', 'loadingProfessional', 'loadingNative',
+        ]);
         $this->state = 'writing';
     }
 

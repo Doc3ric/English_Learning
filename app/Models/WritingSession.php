@@ -19,6 +19,9 @@ class WritingSession extends Model
         'clarity_score',
         'cefr_estimate',
         'rewrite_attempt',
+        'professional_version',
+        'native_version',
+        'memory_context',
     ];
 
     public function user()
