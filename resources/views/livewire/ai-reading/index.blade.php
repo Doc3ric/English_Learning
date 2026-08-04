@@ -264,14 +264,155 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row gap-3">
+                <button wire:click="startQuiz" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-all text-sm shadow-lg hover:shadow-indigo-500/20">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    Take Comprehension Quiz
+                </button>
                 <button wire:click="startNew" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg transition-all text-sm">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     Generate Another Article
                 </button>
-                <a href="{{ route('writing-coach') }}" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold rounded-lg transition-all text-sm">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    Practice Writing on This Topic
-                </a>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── LOADING QUIZ ──────────────────────────────────────────────── --}}
+        @if($state === 'loading_quiz')
+        <div class="flex flex-col items-center justify-center min-h-96 gap-6">
+            <div class="relative">
+                <div class="w-20 h-20 rounded-full border-4 border-slate-800"></div>
+                <div class="w-20 h-20 rounded-full border-4 border-t-indigo-500 border-r-indigo-400 animate-spin absolute inset-0"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-2xl">🤔</div>
+            </div>
+            <div class="text-center">
+                <p class="text-slate-200 font-semibold text-lg mb-1">Generating Quiz...</p>
+                <p class="text-slate-500 text-sm">Creating 5 questions based on your {{ $cefrLevel }} level</p>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── QUIZ ──────────────────────────────────────────────────────── --}}
+        @if($state === 'quiz' && $quizData)
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-100">Test Your Comprehension</h3>
+                <span class="px-2.5 py-1 bg-sky-500/15 border border-sky-500/25 text-sky-300 text-xs font-bold rounded-full">{{ $cefrLevel }}</span>
+            </div>
+            
+            @if($quizError)
+                <div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    {{ $quizError }}
+                </div>
+            @endif
+
+            <div class="space-y-8">
+                @foreach($quizData['questions'] as $index => $question)
+                    <div class="p-4 border border-slate-800 rounded-lg bg-slate-950">
+                        <p class="font-medium text-slate-200 mb-4">
+                            <span class="text-indigo-400 font-bold mr-2">{{ $index + 1 }}.</span> {{ $question['question'] }}
+                        </p>
+                        
+                        <div class="space-y-3 pl-6">
+                            @foreach($question['options'] as $key => $option)
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="radio" wire:model="quizAnswers.{{ $question['id'] }}" value="{{ $key }}" class="w-4 h-4 text-indigo-500 bg-slate-900 border-slate-700 focus:ring-indigo-500 focus:ring-offset-slate-950">
+                                    <span class="text-slate-300 group-hover:text-slate-200 transition-colors">{{ $key }}. {{ $option }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+                
+                <div class="pt-4 text-center">
+                    <button wire:click="submitQuiz" class="bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-bold py-3 px-10 rounded-full transition-colors shadow-lg hover:shadow-indigo-500/25">
+                        Submit Answers
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── QUIZ RESULTS ──────────────────────────────────────────────── --}}
+        @if($state === 'quiz_results' && $quizData)
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-8">
+            <div class="text-center mb-10 pb-10 border-b border-slate-800">
+                @php
+                    $total = count($quizData['questions']);
+                    $passed = $quizScore >= ceil($total * 0.7);
+                @endphp
+
+                @if($passed)
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-900/30 text-emerald-400 mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-100 mb-2">Great Job!</h2>
+                @else
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-900/30 text-amber-400 mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-slate-100 mb-2">Good Practice</h2>
+                @endif
+
+                <p class="font-medium text-lg mb-6 {{ $passed ? 'text-emerald-400' : 'text-amber-400' }}">Score: {{ $quizScore }} / {{ $total }}</p>
+                
+                <div class="flex justify-center gap-3">
+                    <button wire:click="startNew" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-full transition-all text-sm">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        Generate New Article
+                    </button>
+                    <a href="{{ route('writing-coach') }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-full transition-all text-sm">
+                        Go to Writing Coach
+                    </a>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold text-slate-100 mb-6">Review Answers</h3>
+            
+            <div class="space-y-6">
+                @foreach($quizData['questions'] as $index => $question)
+                    @php
+                        $userAnswer = $quizAnswers[$question['id']] ?? null;
+                        $isCorrect = $userAnswer === $question['correct_answer'];
+                    @endphp
+                    <div class="p-4 border {{ $isCorrect ? 'border-emerald-500/30 bg-emerald-900/10' : 'border-red-500/30 bg-red-900/10' }} rounded-lg">
+                        <p class="font-medium text-slate-200 mb-4">
+                            <span class="{{ $isCorrect ? 'text-emerald-500' : 'text-red-500' }} font-bold mr-2">{{ $index + 1 }}.</span> {{ $question['question'] }}
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-slate-500 mb-1">Your Answer:</p>
+                                @if($userAnswer)
+                                    <p class="{{ $isCorrect ? 'text-emerald-400' : 'text-red-400' }} font-medium flex items-center gap-2">
+                                        {{ $userAnswer }}. {{ $question['options'][$userAnswer] ?? 'Unknown' }}
+                                        @if($isCorrect)
+                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        @else
+                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        @endif
+                                    </p>
+                                @else
+                                    <p class="text-slate-500 font-medium italic">No answer provided</p>
+                                @endif
+                            </div>
+                            @if(!$isCorrect)
+                                <div>
+                                    <p class="text-sm text-slate-500 mb-1">Correct Answer:</p>
+                                    <p class="text-emerald-400 font-medium">
+                                        {{ $question['correct_answer'] }}. {{ $question['options'][$question['correct_answer']] }}
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        @if(!empty($question['explanation']))
+                            <div class="pt-3 border-t {{ $isCorrect ? 'border-emerald-500/20' : 'border-red-500/20' }}">
+                                <p class="text-sm text-slate-300"><span class="font-semibold text-slate-400">Explanation:</span> {{ $question['explanation'] }}</p>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
             </div>
         </div>
         @endif

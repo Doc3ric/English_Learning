@@ -201,4 +201,88 @@ PROMPT;
             return null;
         }
     }
+
+    /**
+     * 13C: Generate a 5-question comprehension quiz based on the article.
+     *
+     * @param  string  $articleText  The full article text
+     * @param  string  $cefrLevel    Learner's CEFR level
+     * @return array|null
+     */
+    public static function generateQuiz(string $articleText, string $cefrLevel): ?array
+    {
+        $level = strtoupper(trim($cefrLevel));
+
+        $prompt = <<<PROMPT
+You are an expert English language teacher. Generate a 5-question reading comprehension quiz based ONLY on the following article.
+
+--- ARTICLE ---
+{$articleText}
+--- END OF ARTICLE ---
+
+Target learner level: {$level} CEFR.
+
+Requirements:
+1. Generate exactly 5 questions.
+2. Mix the question types: include both general reading comprehension (Multiple Choice) and vocabulary-in-context questions.
+3. Every question MUST have exactly 4 options (A, B, C, D).
+4. One correct answer per question.
+5. Provide a short, clear explanation of why the correct answer is right based on the text.
+
+Return ONLY a raw JSON object — no markdown, no code blocks, just JSON matching this exact structure:
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the main purpose of music according to the article?",
+      "options": {
+        "A": "To make money",
+        "B": "To connect people",
+        "C": "To help people sleep",
+        "D": "To replace spoken language"
+      },
+      "correct_answer": "B",
+      "explanation": "The article states that music is a universal language that brings people together."
+    }
+  ]
+}
+PROMPT;
+
+        try {
+            $response = Http::withToken(env('GROQ_API_KEY'))
+                ->timeout(60)
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model'           => 'llama-3.3-70b-versatile',
+                    'response_format' => ['type' => 'json_object'],
+                    'messages'        => [
+                        [
+                            'role'    => 'system',
+                            'content' => 'You are an expert English language teacher. Return valid JSON only.',
+                        ],
+                        [
+                            'role'    => 'user',
+                            'content' => $prompt,
+                        ],
+                    ],
+                ]);
+
+            if ($response->successful()) {
+                $raw  = $response->json()['choices'][0]['message']['content'] ?? null;
+                $data = $raw ? json_decode($raw, true) : null;
+
+                if (!$data || empty($data['questions']) || !is_array($data['questions'])) {
+                    return null;
+                }
+                
+                return $data;
+            }
+
+            Log::error('AIReadingService::generateQuiz Groq error', ['body' => $response->body()]);
+            return null;
+
+        } catch (\Exception $e) {
+            Log::error('AIReadingService::generateQuiz exception: ' . $e->getMessage());
+            return null;
+        }
+    }
 }

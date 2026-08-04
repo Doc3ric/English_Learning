@@ -31,6 +31,12 @@ class Index extends Component
     public ?array $summaryResult = null;
     public ?string $summaryError = null;
 
+    // 13C — Quiz
+    public ?array $quizData = null;
+    public array $quizAnswers = [];
+    public ?int $quizScore = null;
+    public ?string $quizError = null;
+
     /**
      * 14 topics — deliberately different subjects and a +6 day offset
      * from Writing Coach's 12-topic list so they never coincide on the same day.
@@ -162,12 +168,64 @@ class Index extends Component
         $this->state         = 'summary_results';
     }
 
+    // ── 13C actions ──────────────────────────────────────────────────────────
+
+    public function startQuiz()
+    {
+        $this->quizError = null;
+        $this->state = 'loading_quiz'; // Re-using loading indicator logic
+
+        if (!$this->quizData) {
+            $result = AIReadingService::generateQuiz($this->article['article'], $this->cefrLevel);
+            if (!$result || empty($result['questions'])) {
+                $this->quizError = 'Could not generate quiz. Please try again.';
+                $this->state = 'summary_results';
+                return;
+            }
+            $this->quizData = $result;
+        }
+
+        $this->state = 'quiz';
+    }
+
+    public function submitQuiz()
+    {
+        $this->quizError = null;
+
+        if (count($this->quizAnswers) < count($this->quizData['questions'])) {
+            $this->quizError = 'Please answer all questions before submitting.';
+            return;
+        }
+
+        $score = 0;
+        foreach ($this->quizData['questions'] as $q) {
+            $userAns = $this->quizAnswers[$q['id']] ?? null;
+            if ($userAns === $q['correct_answer']) {
+                $score++;
+            }
+        }
+
+        $this->quizScore = $score;
+
+        $session = ReadingSession::find($this->sessionId);
+        if ($session) {
+            $session->update([
+                'quiz_data'    => $this->quizData,
+                'quiz_score'   => $this->quizScore,
+                'quiz_answers' => $this->quizAnswers,
+            ]);
+        }
+
+        $this->state = 'quiz_results';
+    }
+
     public function startNew()
     {
         $this->reset([
             'article', 'sessionId', 'errorMessage',
             'summaryResponse', 'summaryWordCount', 'showSummaryWarning',
             'summaryResult', 'summaryError',
+            'quizData', 'quizAnswers', 'quizScore', 'quizError'
         ]);
         $this->state = 'idle';
     }

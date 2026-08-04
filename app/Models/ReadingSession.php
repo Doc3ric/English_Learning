@@ -19,6 +19,14 @@ class ReadingSession extends Model
         'summary_feedback',
         'missing_ideas',
         'vocabulary_suggestions',
+        'quiz_data',
+        'quiz_score',
+        'quiz_answers',
+    ];
+
+    protected $casts = [
+        'quiz_data' => 'array',
+        'quiz_answers' => 'array',
     ];
 
     public function user()
