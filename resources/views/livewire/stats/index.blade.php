@@ -245,6 +245,54 @@
         @endif
     </div>
 
+    <!-- 13F: Reading Analytics -->
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-8 shadow-lg">
+        <div class="flex items-start justify-between mb-6 border-b border-slate-800 pb-4">
+            <div>
+                <h3 class="text-2xl font-bold text-slate-100">Reading Analytics</h3>
+                <p class="text-slate-400 text-sm mt-1">Your recent reading performance and comprehension trends.</p>
+            </div>
+            <div class="flex flex-col items-end">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-bold">
+                    📖 Level: {{ $readingLevel }}
+                </div>
+                <div class="text-[10px] text-slate-500 mt-2 font-medium uppercase tracking-wider">
+                    @if($sessionsUntilCheck > 0)
+                        Next eval in {{ $sessionsUntilCheck }} session{{ $sessionsUntilCheck > 1 ? 's' : '' }}
+                    @else
+                        Eligible for level eval on next quiz
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Avg WPM -->
+            <div class="bg-slate-950 border border-slate-800 rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Average Reading Speed</p>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-5xl font-bold text-emerald-400">{{ $avgWpm }}</span>
+                    <span class="text-xl text-slate-500 font-medium">WPM</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-4">Based on Reading Tracker</p>
+            </div>
+
+            <!-- Trends Chart -->
+            <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-lg p-6">
+                @if(count($readingChartLabels) > 0)
+                    <div class="h-48 relative">
+                        <canvas id="readingChart"></canvas>
+                    </div>
+                @else
+                    <div class="h-full flex flex-col items-center justify-center text-slate-500 py-8">
+                        <p class="text-sm">No reading sessions logged yet.</p>
+                        <p class="text-xs mt-1">Complete an AI Reading session to see trends.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <!-- Overall All-Time Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
@@ -265,3 +313,59 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('livewire:initialized', () => {
+        const ctx = document.getElementById('readingChart');
+        if(ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @json($readingChartLabels),
+                    datasets: [
+                        {
+                            label: 'Comprehension (%)',
+                            data: @json($readingQuizScores),
+                            borderColor: '#10b981', // emerald-500
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Summary Quality (0-100)',
+                            data: @json($readingSummaryScores),
+                            borderColor: '#6366f1', // indigo-500
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cbd5e1' }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>

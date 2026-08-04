@@ -135,6 +135,26 @@ class Index extends Component
 
         $topWeakness = $weaknesses->first();
 
+        // 13F: Reading Analytics
+        $avgWpm = round(\App\Models\ReadingAttempt::avg('words_per_minute') ?? 0);
+
+        $readingSessions = \App\Models\ReadingSession::where('user_id', \Illuminate\Support\Facades\Auth::id())
+            ->whereNotNull('quiz_score')
+            ->latest()
+            ->limit(10)
+            ->get()
+            ->reverse()
+            ->values();
+
+        $readingChartLabels = $readingSessions->map(fn($s) => $s->created_at->format('M d'))->toArray();
+        $readingQuizScores = $readingSessions->map(fn($s) => ($s->quiz_score / 5) * 100)->toArray();
+        $readingSummaryScores = $readingSessions->map(fn($s) => $s->summary_score)->toArray();
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $readingLevel = $user->reading_cefr_level ?? $user->level ?? 'B1';
+        $totalQuizzes = \App\Models\ReadingSession::where('user_id', $user->id)->whereNotNull('quiz_score')->count();
+        $sessionsUntilCheck = $totalQuizzes >= 3 ? 1 : max(0, 3 - $totalQuizzes);
+
         return view('livewire.stats.index', [
             'progress'     => $progress,
             'overall'      => $overall,
@@ -143,6 +163,12 @@ class Index extends Component
             'endOfWeek'    => $endOfWeek->format('M d'),
             'weaknesses'   => $weaknesses,
             'topWeakness'  => $topWeakness,
+            'avgWpm'       => $avgWpm,
+            'readingChartLabels'   => $readingChartLabels,
+            'readingQuizScores'    => $readingQuizScores,
+            'readingSummaryScores' => $readingSummaryScores,
+            'readingLevel'         => $readingLevel,
+            'sessionsUntilCheck'   => $sessionsUntilCheck,
         ]);
     }
 }
