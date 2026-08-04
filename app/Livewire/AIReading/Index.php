@@ -37,6 +37,10 @@ class Index extends Component
     public ?int $quizScore = null;
     public ?string $quizError = null;
 
+    // 13D — Extraction Counts
+    public int $vocabAddedCount = 0;
+    public int $mistakesLoggedCount = 0;
+
     /**
      * 14 topics — deliberately different subjects and a +6 day offset
      * from Writing Coach's 12-topic list so they never coincide on the same day.
@@ -102,6 +106,22 @@ class Index extends Component
             'article_word_count'  => $result['word_count'],
         ]);
 
+        // 13D - Auto-insert Vocabulary
+        $this->vocabAddedCount = 0;
+        if (!empty($result['vocabulary']) && is_array($result['vocabulary'])) {
+            foreach ($result['vocabulary'] as $v) {
+                if (!empty($v['word']) && !empty($v['definition'])) {
+                    \App\Models\Vocabulary::create([
+                        'word' => $v['word'],
+                        'meaning' => $v['definition'],
+                        'example_sentence' => $v['example'] ?? null,
+                        'source' => 'reading_coach',
+                    ]);
+                    $this->vocabAddedCount++;
+                }
+            }
+        }
+
         $this->article   = $result;
         $this->sessionId = $session->id;
         $this->state     = 'reading';
@@ -162,6 +182,28 @@ class Index extends Component
                 'missing_ideas'          => json_encode(array_values($result['missing_ideas'] ?? [])),
                 'vocabulary_suggestions' => json_encode(array_values($result['vocabulary_suggestions'] ?? [])),
             ]);
+        }
+
+        // 13D - Auto-insert Mistakes
+        $this->mistakesLoggedCount = 0;
+        if (!empty($result['mistakes']) && is_array($result['mistakes'])) {
+            $allowedCategories = ['grammar', 'vocabulary', 'pronunciation', 'writing'];
+            foreach ($result['mistakes'] as $m) {
+                if (!empty($m['wrong_text']) && !empty($m['correct_text'])) {
+                    $cat = strtolower($m['category'] ?? 'writing');
+                    if (!in_array($cat, $allowedCategories)) {
+                        $cat = 'writing';
+                    }
+                    \App\Models\Mistake::create([
+                        'wrong_text' => $m['wrong_text'],
+                        'correct_text' => $m['correct_text'],
+                        'reason' => $m['reason'] ?? '',
+                        'category' => $cat,
+                        'source' => 'reading_coach',
+                    ]);
+                    $this->mistakesLoggedCount++;
+                }
+            }
         }
 
         $this->summaryResult = $result;

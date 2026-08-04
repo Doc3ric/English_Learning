@@ -32,6 +32,7 @@ Requirements:
 6. Write a clear, descriptive title for the article.
 7. Calculate the exact word count of the article body (excluding the title).
 8. Estimate reading time in minutes (assume 150 words per minute for a learner at this level, rounded up to the nearest whole number).
+9. Extract 3 to 5 difficult or useful vocabulary words/phrases from your generated article, providing a definition and an example sentence for each.
 
 Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text — just the JSON:
 {
@@ -39,7 +40,14 @@ Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text �
   "article": "The full article text here as flowing prose paragraphs separated by newlines...",
   "word_count": 420,
   "estimated_read_time": 3,
-  "cefr_level": "{$level}"
+  "cefr_level": "{$level}",
+  "vocabulary": [
+    {
+      "word": "universal",
+      "definition": "done by or involving all the people in the world or in a particular group",
+      "example": "Music is a universal language."
+    }
+  ]
 }
 PROMPT;
 
@@ -125,6 +133,7 @@ Evaluate the summary on these dimensions:
 3. Grammar: Are the learner's sentences grammatically correct and well-structured?
 4. Vocabulary: Could they have used more precise or advanced vocabulary? Give specific upgrade suggestions.
 5. Overall: Write an encouraging 2–3 sentence overall assessment appropriate for a {$level} learner.
+6. Mistakes: Extract specific, discrete grammar or vocabulary errors made by the learner in their summary. For each, provide the incorrect text, the corrected text, the reason, and the category (MUST BE EXACTLY ONE OF: 'Grammar', 'Vocabulary', 'Pronunciation', 'Writing').
 
 Return ONLY a raw JSON object — no markdown, no code blocks, just JSON:
 {
@@ -139,6 +148,14 @@ Return ONLY a raw JSON object — no markdown, no code blocks, just JSON:
   "vocabulary_suggestions": [
     "Instead of 'good', try 'significant' or 'meaningful' — these are more precise at the {$level} level.",
     "Instead of 'show', 'demonstrate' or 'reflect' would sound more natural here."
+  ],
+  "mistakes": [
+    {
+      "wrong_text": "I forget to submit",
+      "correct_text": "I forgot to submit",
+      "reason": "Past tense is required when talking about past events.",
+      "category": "Grammar"
+    }
   ]
 }
 PROMPT;

@@ -261,6 +261,26 @@
                 </ul>
             </div>
             @endif
+            @endif
+
+            {{-- 13D: Extraction Confirmations --}}
+            @if($vocabAddedCount > 0 || $mistakesLoggedCount > 0)
+                <div class="flex flex-wrap gap-3">
+                    @if($vocabAddedCount > 0)
+                        <a href="{{ route('vocabulary') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-full text-xs font-bold text-emerald-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            {{ $vocabAddedCount }} {{ Str::plural('word', $vocabAddedCount) }} added to Vocabulary
+                        </a>
+                    @endif
+                    
+                    @if($mistakesLoggedCount > 0)
+                        <a href="{{ route('mistakes') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-full text-xs font-bold text-rose-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            {{ $mistakesLoggedCount }} {{ Str::plural('mistake', $mistakesLoggedCount) }} logged
+                        </a>
+                    @endif
+                </div>
+            @endif
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row gap-3">
