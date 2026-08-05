@@ -7,32 +7,32 @@
         @if($state === 'idle')
         <div class="space-y-6">
             @if($errorMessage)
-                <div class="flex items-center gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                    <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    {{ $errorMessage }}
+                <div class="ds-card-accent-red p-4 flex items-center gap-3">
+                    <svg class="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span class="text-sm text-red-400">{{ $errorMessage }}</span>
                 </div>
             @endif
 
-            <div class="relative overflow-hidden bg-gradient-to-br from-sky-900/20 via-slate-900 to-slate-950 border border-sky-600/30 rounded-xl p-10 shadow-xl">
-                <div class="absolute -top-16 -right-16 w-64 h-64 bg-sky-500/5 rounded-full pointer-events-none"></div>
+            <div class="relative overflow-hidden bg-gradient-to-br from-emerald-900/20 via-slate-900 to-slate-950 border border-emerald-600/30 rounded-xl p-10 shadow-xl">
+                <div class="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/5 rounded-full pointer-events-none"></div>
                 <div class="relative">
-                    <div class="flex items-center gap-2 text-sky-400 text-xs font-bold uppercase tracking-widest mb-6">
+                    <div class="flex items-center gap-2 text-emerald-400 ds-eyebrow mb-6">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         Today's Reading
                     </div>
                     <h2 class="text-2xl font-bold text-white leading-snug mb-6">{{ $topic }}</h2>
                     <div class="flex items-center gap-3 mb-8">
-                        <span class="px-3 py-1 bg-sky-500/15 border border-sky-500/25 text-sky-300 text-xs font-bold rounded-full">Level {{ $cefrLevel }}</span>
+                        <x-ui.badge>Level {{ $cefrLevel }}</x-ui.badge>
                         <span class="text-slate-500 text-xs">·</span>
                         <span class="text-slate-400 text-xs">300–600 words · 2–4 min read</span>
                     </div>
-                    <button wire:click="generate" class="inline-flex items-center gap-2.5 px-7 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg transition-all duration-200 shadow-lg hover:shadow-sky-500/25 text-sm">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <button wire:click="generate" class="ds-btn ds-btn-lg ds-btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         Generate Article
                     </button>
                 </div>
             </div>
-            <p class="text-slate-500 text-xs text-center">A unique article is generated for you each time using AI — tailored to your {{ $cefrLevel }} level. Topics rotate daily.</p>
+            <p class="ds-muted text-center">A unique article is generated for you each time using AI — tailored to your {{ $cefrLevel }} level. Topics rotate daily.</p>
         </div>
         @endif
 
@@ -41,12 +41,12 @@
         <div class="flex flex-col items-center justify-center min-h-96 gap-6">
             <div class="relative">
                 <div class="w-20 h-20 rounded-full border-4 border-slate-800"></div>
-                <div class="w-20 h-20 rounded-full border-4 border-t-sky-500 border-r-sky-400 animate-spin absolute inset-0"></div>
+                <div class="w-20 h-20 rounded-full border-4 border-t-emerald-500 border-r-emerald-400 animate-spin absolute inset-0"></div>
                 <div class="absolute inset-0 flex items-center justify-center text-2xl">📖</div>
             </div>
             <div class="text-center">
                 <p class="text-slate-200 font-semibold text-lg mb-1">Writing your article...</p>
-                <p class="text-slate-500 text-sm">Crafting a {{ $cefrLevel }}-level piece on <span class="text-slate-400 italic">{{ $topic }}</span></p>
+                <p class="ds-muted">Crafting a {{ $cefrLevel }}-level piece on <span class="text-slate-400 italic">{{ $topic }}</span></p>
             </div>
         </div>
         @endif
@@ -56,23 +56,23 @@
         <div class="space-y-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3 flex-wrap">
-                    <span class="px-2.5 py-1 bg-sky-500/15 border border-sky-500/25 text-sky-300 text-xs font-bold rounded-full">{{ $article['cefr_level'] }}</span>
-                    <span class="flex items-center gap-1.5 text-slate-400 text-xs">
+                    <x-ui.badge>{{ $article['cefr_level'] }}</x-ui.badge>
+                    <span class="flex items-center gap-1.5 ds-muted">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         {{ $article['estimated_read_time'] }} min read
                     </span>
-                    <span class="flex items-center gap-1.5 text-slate-400 text-xs">
+                    <span class="flex items-center gap-1.5 ds-muted">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         {{ number_format($article['word_count']) }} words
                     </span>
                 </div>
-                <button wire:click="startNew" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg transition-colors border border-slate-700">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <button wire:click="startNew" class="ds-btn ds-btn-sm ds-btn-secondary">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     New Article
                 </button>
             </div>
 
-            <article class="bg-slate-900 border border-slate-800 rounded-xl px-10 py-10 shadow-lg">
+            <article class="ds-card px-10 py-10 shadow-lg">
                 <h1 class="text-2xl font-bold text-white leading-tight mb-2">{{ $article['title'] }}</h1>
                 <div class="h-px bg-slate-800 mb-8"></div>
                 <div>
@@ -85,14 +85,14 @@
             </article>
 
             {{-- 13B CTA --}}
-            <div class="bg-gradient-to-r from-indigo-900/20 to-slate-900 border border-indigo-500/20 rounded-xl p-6 flex items-center justify-between gap-4">
+            <div class="ds-card-accent-emerald flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
                 <div>
                     <p class="font-semibold text-slate-200 text-sm mb-1">Ready to test your comprehension?</p>
-                    <p class="text-slate-500 text-xs">Summarize what you just read in your own words — from memory.</p>
+                    <p class="ds-muted text-xs">Summarize what you just read in your own words — from memory.</p>
                 </div>
-                <button wire:click="startSummary" class="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-all text-sm shadow-lg hover:shadow-indigo-500/20">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    I've Finished Reading — Write Summary
+                <button wire:click="startSummary" class="shrink-0 ds-btn ds-btn-md ds-btn-primary">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    I've Finished Reading
                 </button>
             </div>
         </div>
@@ -102,15 +102,14 @@
         @if($state === 'summarizing' && $article)
         <div class="space-y-5">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-bold text-slate-200">Write Your Summary</h2>
-                <span class="px-2.5 py-1 bg-sky-500/15 border border-sky-500/25 text-sky-300 text-xs font-bold rounded-full">{{ $cefrLevel }}</span>
+                <h2 class="ds-section-title">Write Your Summary</h2>
+                <x-ui.badge>{{ $cefrLevel }}</x-ui.badge>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
                 {{-- Left: Article reference (title + first 2 paragraphs only) --}}
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 overflow-y-auto max-h-[460px]">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                <div class="ds-card-nested p-6 overflow-y-auto max-h-[460px]">
+                    <p class="ds-eyebrow mb-4 flex items-center gap-2">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         Article Reference
                     </p>
@@ -122,7 +121,7 @@
                         $preview = array_slice($paragraphs, 0, 2);
                     @endphp
                     @foreach($preview as $p)
-                        <p class="text-slate-400 text-sm leading-7 mb-3 last:mb-0">{{ $p }}</p>
+                        <p class="ds-body mb-3 last:mb-0">{{ $p }}</p>
                     @endforeach
                     @if(count($paragraphs) > 2)
                         <p class="text-slate-600 text-xs mt-4 italic">— rest of article hidden to test your memory —</p>
@@ -130,12 +129,12 @@
                 </div>
 
                 {{-- Right: Summary textarea --}}
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                <div class="ds-card p-6 flex flex-col">
+                    <p class="ds-eyebrow mb-4 flex items-center gap-2">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                         Your Summary
                     </p>
-                    <p class="text-slate-400 text-xs mb-4 leading-relaxed">Summarize the article in your own words — from memory. Aim for at least 30 words.</p>
+                    <p class="ds-muted text-xs mb-4">Summarize the article in your own words — from memory. Aim for at least 30 words.</p>
 
                     @if($summaryError)
                         <div class="text-red-400 text-xs mb-3 p-3 bg-red-500/10 rounded-lg border border-red-500/20">{{ $summaryError }}</div>
@@ -145,7 +144,7 @@
                         wire:model.live="summaryResponse"
                         rows="9"
                         placeholder="Write your summary here..."
-                        class="flex-1 w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm leading-relaxed resize-none mb-3"
+                        class="ds-textarea flex-1 mb-3"
                     ></textarea>
 
                     {{-- Word count + warning --}}
@@ -167,7 +166,7 @@
                         wire:click="submitSummary"
                         wire:loading.attr="disabled"
                         wire:target="submitSummary"
-                        class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-all text-sm disabled:opacity-50"
+                        class="ds-btn ds-btn-md ds-btn-primary w-full"
                     >
                         <span wire:loading.remove wire:target="submitSummary">Submit Summary</span>
                         <span wire:loading wire:target="submitSummary" class="flex items-center gap-2">
@@ -185,7 +184,7 @@
         <div class="space-y-5">
 
             {{-- Score header --}}
-            <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-xl p-8 flex flex-col sm:flex-row items-center gap-6 shadow">
+            <div class="ds-card p-8 flex flex-col sm:flex-row items-center gap-6 shadow-lg">
                 {{-- Score ring --}}
                 <div class="relative w-28 h-28 shrink-0">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -203,39 +202,39 @@
                 </div>
 
                 <div class="flex-1 text-center sm:text-left">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Overall Feedback</p>
-                    <p class="text-slate-200 leading-relaxed">{{ $summaryResult['overall_feedback'] }}</p>
+                    <p class="ds-eyebrow mb-2">Overall Feedback</p>
+                    <p class="ds-body">{{ $summaryResult['overall_feedback'] }}</p>
                 </div>
             </div>
 
             {{-- Accuracy + Grammar --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <p class="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3 flex items-center gap-2">
+                <div class="ds-card p-5">
+                    <p class="ds-eyebrow text-emerald-400 mb-3 flex items-center gap-2">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Accuracy
                     </p>
-                    <p class="text-slate-300 text-sm leading-relaxed">{{ $summaryResult['accuracy_feedback'] }}</p>
+                    <p class="ds-body">{{ $summaryResult['accuracy_feedback'] }}</p>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
-                    <p class="text-xs font-bold uppercase tracking-wider text-purple-400 mb-3 flex items-center gap-2">
+                <div class="ds-card p-5">
+                    <p class="ds-eyebrow text-amber-400 mb-3 flex items-center gap-2">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Grammar
                     </p>
-                    <p class="text-slate-300 text-sm leading-relaxed">{{ $summaryResult['grammar_feedback'] }}</p>
+                    <p class="ds-body">{{ $summaryResult['grammar_feedback'] }}</p>
                 </div>
             </div>
 
             {{-- What You Missed --}}
             @if(!empty($summaryResult['missing_ideas']))
-            <div class="bg-slate-900 border border-amber-500/20 rounded-xl p-5">
-                <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-4 flex items-center gap-2">
+            <div class="ds-card border-amber-500/20 p-5">
+                <p class="ds-eyebrow text-amber-400 mb-4 flex items-center gap-2">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     What You Missed
                 </p>
                 <ul class="space-y-2">
                     @foreach($summaryResult['missing_ideas'] as $idea)
-                        <li class="flex items-start gap-2.5 text-slate-300 text-sm leading-relaxed">
+                        <li class="flex items-start gap-2.5 ds-body">
                             <span class="text-amber-500 mt-0.5 shrink-0">→</span>
                             {{ $idea }}
                         </li>
@@ -246,14 +245,14 @@
 
             {{-- Vocabulary Suggestions --}}
             @if(!empty($summaryResult['vocabulary_suggestions']))
-            <div class="bg-slate-900 border border-emerald-500/20 rounded-xl p-5">
-                <p class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-4 flex items-center gap-2">
+            <div class="ds-card border-emerald-500/20 p-5">
+                <p class="ds-eyebrow text-emerald-400 mb-4 flex items-center gap-2">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                     Vocabulary Upgrades
                 </p>
                 <ul class="space-y-2">
                     @foreach($summaryResult['vocabulary_suggestions'] as $suggestion)
-                        <li class="flex items-start gap-2.5 text-slate-300 text-sm leading-relaxed">
+                        <li class="flex items-start gap-2.5 ds-body">
                             <span class="text-emerald-500 mt-0.5 shrink-0">✦</span>
                             {{ $suggestion }}
                         </li>
@@ -266,16 +265,20 @@
             @if($vocabAddedCount > 0 || $mistakesLoggedCount > 0)
                 <div class="flex flex-wrap gap-3">
                     @if($vocabAddedCount > 0)
-                        <a href="{{ route('vocabulary') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-full text-xs font-bold text-emerald-400 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            {{ $vocabAddedCount }} {{ Str::plural('word', $vocabAddedCount) }} added to Vocabulary
+                        <a href="{{ route('vocabulary') }}" class="hover:opacity-80 transition-opacity">
+                            <x-ui.badge variant="emerald">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                {{ $vocabAddedCount }} {{ Str::plural('word', $vocabAddedCount) }} added to Vocabulary
+                            </x-ui.badge>
                         </a>
                     @endif
                     
                     @if($mistakesLoggedCount > 0)
-                        <a href="{{ route('mistakes') }}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 rounded-full text-xs font-bold text-rose-400 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            {{ $mistakesLoggedCount }} {{ Str::plural('mistake', $mistakesLoggedCount) }} logged
+                        <a href="{{ route('mistakes') }}" class="hover:opacity-80 transition-opacity">
+                            <x-ui.badge variant="red">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                {{ $mistakesLoggedCount }} {{ Str::plural('mistake', $mistakesLoggedCount) }} logged
+                            </x-ui.badge>
                         </a>
                     @endif
                 </div>
@@ -283,12 +286,12 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row gap-3">
-                <button wire:click="startQuiz" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition-all text-sm shadow-lg hover:shadow-indigo-500/20">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                <button wire:click="startQuiz" class="ds-btn ds-btn-lg ds-btn-primary flex-1">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                     Take Comprehension Quiz
                 </button>
-                <button wire:click="startNew" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg transition-all text-sm">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <button wire:click="startNew" class="ds-btn ds-btn-lg ds-btn-secondary flex-1">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     Generate Another Article
                 </button>
             </div>
@@ -300,22 +303,22 @@
         <div class="flex flex-col items-center justify-center min-h-96 gap-6">
             <div class="relative">
                 <div class="w-20 h-20 rounded-full border-4 border-slate-800"></div>
-                <div class="w-20 h-20 rounded-full border-4 border-t-indigo-500 border-r-indigo-400 animate-spin absolute inset-0"></div>
+                <div class="w-20 h-20 rounded-full border-4 border-t-amber-500 border-r-amber-400 animate-spin absolute inset-0"></div>
                 <div class="absolute inset-0 flex items-center justify-center text-2xl">🤔</div>
             </div>
             <div class="text-center">
                 <p class="text-slate-200 font-semibold text-lg mb-1">Generating Quiz...</p>
-                <p class="text-slate-500 text-sm">Creating 5 questions based on your {{ $cefrLevel }} level</p>
+                <p class="ds-muted">Creating 5 questions based on your {{ $cefrLevel }} level</p>
             </div>
         </div>
         @endif
 
         {{-- ── QUIZ ──────────────────────────────────────────────────────── --}}
         @if($state === 'quiz' && $quizData)
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-8">
+        <div class="ds-card p-8">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-slate-100">Test Your Comprehension</h3>
-                <span class="px-2.5 py-1 bg-sky-500/15 border border-sky-500/25 text-sky-300 text-xs font-bold rounded-full">{{ $cefrLevel }}</span>
+                <h3 class="ds-section-title">Test Your Comprehension</h3>
+                <x-ui.badge>{{ $cefrLevel }}</x-ui.badge>
             </div>
             
             @if($quizError)
@@ -327,16 +330,16 @@
 
             <div class="space-y-8">
                 @foreach($quizData['questions'] as $index => $question)
-                    <div class="p-4 border border-slate-800 rounded-lg bg-slate-950">
+                    <div class="ds-card-nested p-4">
                         <p class="font-medium text-slate-200 mb-4">
-                            <span class="text-indigo-400 font-bold mr-2">{{ $index + 1 }}.</span> {{ $question['question'] }}
+                            <span class="text-emerald-400 font-bold mr-2">{{ $index + 1 }}.</span> {{ $question['question'] }}
                         </p>
                         
                         <div class="space-y-3 pl-6">
                             @foreach($question['options'] as $key => $option)
                                 <label class="flex items-center gap-3 cursor-pointer group">
-                                    <input type="radio" wire:model="quizAnswers.{{ $question['id'] }}" value="{{ $key }}" class="w-4 h-4 text-indigo-500 bg-slate-900 border-slate-700 focus:ring-indigo-500 focus:ring-offset-slate-950">
-                                    <span class="text-slate-300 group-hover:text-slate-200 transition-colors">{{ $key }}. {{ $option }}</span>
+                                    <input type="radio" wire:model="quizAnswers.{{ $question['id'] }}" value="{{ $key }}" class="w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 focus:ring-emerald-500 focus:ring-offset-slate-950">
+                                    <span class="ds-body group-hover:text-slate-200 transition-colors">{{ $key }}. {{ $option }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -344,7 +347,7 @@
                 @endforeach
                 
                 <div class="pt-4 text-center">
-                    <button wire:click="submitQuiz" class="bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-bold py-3 px-10 rounded-full transition-colors shadow-lg hover:shadow-indigo-500/25">
+                    <button wire:click="submitQuiz" class="ds-btn ds-btn-lg ds-btn-primary">
                         Submit Answers
                     </button>
                 </div>
@@ -354,7 +357,7 @@
 
         {{-- ── QUIZ RESULTS ──────────────────────────────────────────────── --}}
         @if($state === 'quiz_results' && $quizData)
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-8">
+        <div class="ds-card p-8">
             <div class="text-center mb-10 pb-10 border-b border-slate-800">
                 @php
                     $total = count($quizData['questions']);
@@ -376,17 +379,17 @@
                 <p class="font-medium text-lg mb-6 {{ $passed ? 'text-emerald-400' : 'text-amber-400' }}">Score: {{ $quizScore }} / {{ $total }}</p>
                 
                 <div class="flex justify-center gap-3">
-                    <button wire:click="startNew" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-full transition-all text-sm">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <button wire:click="startNew" class="ds-btn ds-btn-md ds-btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         Generate New Article
                     </button>
-                    <a href="{{ route('writing-coach') }}" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-full transition-all text-sm">
+                    <a href="{{ route('writing-coach') }}" class="ds-btn ds-btn-md ds-btn-secondary">
                         Go to Writing Coach
                     </a>
                 </div>
             </div>
 
-            <h3 class="text-xl font-bold text-slate-100 mb-6">Review Answers</h3>
+            <h3 class="ds-section-title mb-6">Review Answers</h3>
             
             <div class="space-y-6">
                 @foreach($quizData['questions'] as $index => $question)
@@ -394,14 +397,14 @@
                         $userAnswer = $quizAnswers[$question['id']] ?? null;
                         $isCorrect = $userAnswer === $question['correct_answer'];
                     @endphp
-                    <div class="p-4 border {{ $isCorrect ? 'border-emerald-500/30 bg-emerald-900/10' : 'border-red-500/30 bg-red-900/10' }} rounded-lg">
+                    <div class="p-4 border {{ $isCorrect ? 'border-emerald-500/30 bg-emerald-900/10' : 'border-red-500/30 bg-red-900/10' }} rounded-xl">
                         <p class="font-medium text-slate-200 mb-4">
                             <span class="{{ $isCorrect ? 'text-emerald-500' : 'text-red-500' }} font-bold mr-2">{{ $index + 1 }}.</span> {{ $question['question'] }}
                         </p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <p class="text-sm text-slate-500 mb-1">Your Answer:</p>
+                                <p class="ds-muted mb-1">Your Answer:</p>
                                 @if($userAnswer)
                                     <p class="{{ $isCorrect ? 'text-emerald-400' : 'text-red-400' }} font-medium flex items-center gap-2">
                                         {{ $userAnswer }}. {{ $question['options'][$userAnswer] ?? 'Unknown' }}
@@ -412,12 +415,12 @@
                                         @endif
                                     </p>
                                 @else
-                                    <p class="text-slate-500 font-medium italic">No answer provided</p>
+                                    <p class="ds-muted italic">No answer provided</p>
                                 @endif
                             </div>
                             @if(!$isCorrect)
                                 <div>
-                                    <p class="text-sm text-slate-500 mb-1">Correct Answer:</p>
+                                    <p class="ds-muted mb-1">Correct Answer:</p>
                                     <p class="text-emerald-400 font-medium">
                                         {{ $question['correct_answer'] }}. {{ $question['options'][$question['correct_answer']] }}
                                     </p>
@@ -427,7 +430,7 @@
                         
                         @if(!empty($question['explanation']))
                             <div class="pt-3 border-t {{ $isCorrect ? 'border-emerald-500/20' : 'border-red-500/20' }}">
-                                <p class="text-sm text-slate-300"><span class="font-semibold text-slate-400">Explanation:</span> {{ $question['explanation'] }}</p>
+                                <p class="ds-body"><strong class="text-slate-400 font-semibold">Explanation:</strong> {{ $question['explanation'] }}</p>
                             </div>
                         @endif
                     </div>
