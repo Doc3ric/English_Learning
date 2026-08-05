@@ -4,14 +4,14 @@
     </x-slot>
 
     <!-- Header Stats -->
-    <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg p-8 shadow-lg text-white flex flex-col md:flex-row items-center justify-between">
+    <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-8 shadow-xl text-white flex flex-col md:flex-row items-center justify-between">
         <div>
             <h2 class="text-3xl font-bold mb-2">Your Trophy Room</h2>
             <p class="text-amber-100 opacity-90">Keep pushing your limits to unlock more badges!</p>
         </div>
         <div class="mt-6 md:mt-0 text-center">
             <div class="text-5xl font-black mb-1">{{ $totalUnlocked }}<span class="text-2xl text-amber-200">/{{ $totalAchievements }}</span></div>
-            <p class="text-sm font-semibold uppercase tracking-wider text-amber-200">Unlocked</p>
+            <p class="ds-eyebrow !text-amber-200">Unlocked</p>
         </div>
     </div>
 
@@ -19,13 +19,13 @@
     @foreach(['vocabulary', 'grammar', 'reading', 'journal', 'mistakes', 'time', 'streak'] as $cat)
         @if(isset($achievements[$cat]))
             <div class="mb-10">
-                <h3 class="text-xl font-bold text-slate-200 capitalize mb-6 border-b border-slate-800 pb-2">{{ $cat }}</h3>
+                <h3 class="ds-section-title capitalize mb-6 border-b border-slate-800 pb-2">{{ $cat }}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @foreach($achievements[$cat] as $ach)
                         @php
                             $isUnlocked = in_array($ach['key'], $unlockedKeys);
                         @endphp
-                        <div class="relative p-6 rounded-lg border {{ $isUnlocked ? 'bg-slate-800/80 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'bg-slate-900/50 border-slate-800 opacity-60 grayscale' }} flex flex-col items-center text-center transition-all duration-300">
+                        <div class="ds-card relative flex flex-col items-center text-center transition-all duration-300 {{ $isUnlocked ? '!border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'opacity-60 grayscale' }}">
                             
                             @if($isUnlocked)
                                 <div class="absolute -top-3 -right-3 bg-amber-500 text-white p-1 rounded-full shadow-lg">
@@ -53,7 +53,7 @@
                             </div>
                             
                             <h4 class="font-bold {{ $isUnlocked ? 'text-amber-400' : 'text-slate-300' }} mb-1">{{ $ach['title'] }}</h4>
-                            <p class="text-xs text-slate-500">{{ $ach['desc'] }}</p>
+                            <p class="ds-muted text-xs">{{ $ach['desc'] }}</p>
                         </div>
                     @endforeach
                 </div>
