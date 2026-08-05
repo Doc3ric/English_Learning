@@ -3,21 +3,13 @@
         Vocabulary
     </x-slot>
 
-    <div class="mb-6 border-b border-slate-800">
-        <nav class="-mb-px flex space-x-8">
-            <button wire:click="$set('activeTab', 'daily')" class="{{ $activeTab === 'daily' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                Today's Words
-            </button>
-            <button wire:click="$set('activeTab', 'review')" class="{{ $activeTab === 'review' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                Review (Last 7 Days)
-            </button>
-            <button wire:click="$set('activeTab', 'add')" class="{{ $activeTab === 'add' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-300' }} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                Add Word
-            </button>
-        </nav>
-    </div>
+    <x-ui.tab-bar>
+        <x-ui.tab value="daily"  label="Today's Words"      :active="$activeTab" wire:click="$set('activeTab', 'daily')" />
+        <x-ui.tab value="review" label="Review (Last 7 Days)" :active="$activeTab" wire:click="$set('activeTab', 'review')" />
+        <x-ui.tab value="add"    label="Add Word"            :active="$activeTab" wire:click="$set('activeTab', 'add')" />
+    </x-ui.tab-bar>
 
-    <div class="mt-4">
+    <div class="mt-6">
         @if ($activeTab === 'daily')
             <livewire:vocabulary.daily />
         @elseif ($activeTab === 'review')
