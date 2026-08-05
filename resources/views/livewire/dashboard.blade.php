@@ -199,7 +199,7 @@
                 $w_pct = min(100, ($progress['writing']    / max(1, $goal->target_writing))    * 100);
                 $s_pct = min(100, ($progress['study_time'] / max(1, $goal->target_study_time)) * 100);
 
-                {{-- Ring colors: per-dimension data colours, intentionally distinct --}}
+                // Ring colors: per-dimension data colours, intentionally distinct
                 $rings = [
                     ['label' => 'Vocab',   'pct' => $v_pct, 'color' => 'text-purple-500', 'val' => $progress['vocabulary'],  'target' => $goal->target_vocabulary,  'unit' => 'words'],
                     ['label' => 'Grammar', 'pct' => $g_pct, 'color' => 'text-blue-500',   'val' => $progress['grammar'],     'target' => $goal->target_grammar,     'unit' => 'lessons'],
