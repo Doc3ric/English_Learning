@@ -4,19 +4,19 @@
     </x-slot>
 
     @if (session()->has('message'))
-        <div class="p-4 rounded bg-emerald-900/20 border border-emerald-500/30 text-emerald-400 font-medium text-center shadow-lg shadow-emerald-900/20">
+        <div class="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-medium text-center shadow-lg shadow-emerald-900/20">
             {{ session('message') }}
         </div>
     @endif
 
     <!-- Top Highlight: Streak & Total Time -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-lg p-8 flex items-center justify-between shadow-lg relative overflow-hidden group">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-xl p-8 flex items-center justify-between shadow-lg relative overflow-hidden group">
             <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity">
                 <svg class="w-48 h-48 text-orange-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.58,4.03c-1.39-1.38-3.41-1.63-5.06-0.65C12,3.67,11.39,4.2,10.96,4.86C10.53,5.52,10.33,6.29,10.4,7.06 c0.09,1.15,0.72,2.15,1.64,2.77c0.2,0.14,0.41,0.25,0.64,0.34c0.67,0.27,1.4,0.32,2.1,0.15c0.5-0.12,0.97-0.34,1.38-0.64 C16.57,9.37,16.89,8.9,17.1,8.38c0.23-0.56,0.32-1.16,0.27-1.76C17.3,5.77,17.02,4.98,17.58,4.03z M12,22c5.52,0,10-4.48,10-10 c0-4.75-3.31-8.72-7.75-9.74c0.88,1.41,1.1,3.13,0.61,4.71c-0.63,2.02-2.31,3.58-4.38,4.06c-1.29,0.3-2.61,0.06-3.7-0.64 C5.73,9.72,5,8.5,5,7.18C5,6.59,5.12,6,5.34,5.46C3.33,7.17,2,9.75,2,12C2,17.52,6.48,22,12,22z"></path></svg>
             </div>
             <div class="z-10">
-                <p class="text-slate-400 font-semibold uppercase tracking-wider text-sm mb-1">Current Streak</p>
+                <p class="ds-eyebrow mb-1">Current Streak</p>
                 <div class="flex items-baseline gap-2">
                     <span class="text-6xl font-bold text-orange-500">{{ $streak }}</span>
                     <span class="text-xl text-slate-500 font-medium">Days</span>
@@ -27,12 +27,12 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-lg p-8 flex items-center justify-between shadow-lg relative overflow-hidden group">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-xl p-8 flex items-center justify-between shadow-lg relative overflow-hidden group">
             <div class="absolute -right-10 -bottom-10 opacity-5 group-hover:opacity-10 transition-opacity">
                 <svg class="w-48 h-48 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div class="z-10">
-                <p class="text-slate-400 font-semibold uppercase tracking-wider text-sm mb-1">Total Study Time</p>
+                <p class="ds-eyebrow mb-1">Total Study Time</p>
                 <div class="flex items-baseline gap-2">
                     <span class="text-6xl font-bold text-emerald-500">{{ number_format(floor($overall['study_time'] / 60)) }}</span>
                     <span class="text-xl text-slate-500 font-medium">h</span>
@@ -47,45 +47,45 @@
     </div>
 
     <!-- Weekly Goals -->
-    <div class="bg-slate-900 border border-slate-800 rounded-lg p-8 shadow-lg">
+    <div class="ds-card p-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h3 class="text-2xl font-bold text-slate-100">Weekly Goals</h3>
-                <p class="text-slate-400 text-sm mt-1">This Week: <span class="font-bold text-slate-300">{{ $startOfWeek }} - {{ $endOfWeek }}</span></p>
+                <p class="ds-muted mt-1">This Week: <span class="font-bold text-slate-300">{{ $startOfWeek }} - {{ $endOfWeek }}</span></p>
             </div>
             
-            <button wire:click="$toggle('isEditingGoals')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-2 px-4 rounded-md transition-colors border border-slate-700 text-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <button wire:click="$toggle('isEditingGoals')" class="ds-btn ds-btn-sm ds-btn-secondary">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 {{ $isEditingGoals ? 'Cancel Edit' : 'Edit Goals' }}
             </button>
         </div>
 
         @if($isEditingGoals)
-            <div class="bg-slate-950 border border-slate-800 rounded-lg p-6 mb-8">
+            <div class="ds-card-nested p-6 mb-8">
                 <form wire:submit="saveGoals" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Vocabulary (Words/Week)</label>
-                        <input type="number" wire:model="target_vocabulary" class="w-full bg-slate-900 border border-slate-700 rounded-md py-2 px-3 text-slate-200 focus:outline-none focus:border-emerald-500" required>
+                        <label class="ds-label">Vocabulary (Words/Week)</label>
+                        <input type="number" wire:model="target_vocabulary" class="ds-input" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Grammar (Lessons/Week)</label>
-                        <input type="number" wire:model="target_grammar" class="w-full bg-slate-900 border border-slate-700 rounded-md py-2 px-3 text-slate-200 focus:outline-none focus:border-emerald-500" required>
+                        <label class="ds-label">Grammar (Lessons/Week)</label>
+                        <input type="number" wire:model="target_grammar" class="ds-input" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Reading (Articles/Week)</label>
-                        <input type="number" wire:model="target_reading" class="w-full bg-slate-900 border border-slate-700 rounded-md py-2 px-3 text-slate-200 focus:outline-none focus:border-emerald-500" required>
+                        <label class="ds-label">Reading (Articles/Week)</label>
+                        <input type="number" wire:model="target_reading" class="ds-input" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Writing (Entries/Week)</label>
-                        <input type="number" wire:model="target_writing" class="w-full bg-slate-900 border border-slate-700 rounded-md py-2 px-3 text-slate-200 focus:outline-none focus:border-emerald-500" required>
+                        <label class="ds-label">Writing (Entries/Week)</label>
+                        <input type="number" wire:model="target_writing" class="ds-input" required>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Total Study Time (Minutes/Week)</label>
-                        <input type="number" wire:model="target_study_time" class="w-full bg-slate-900 border border-slate-700 rounded-md py-2 px-3 text-slate-200 focus:outline-none focus:border-emerald-500" required>
+                        <label class="ds-label">Total Study Time (Minutes/Week)</label>
+                        <input type="number" wire:model="target_study_time" class="ds-input" required>
                     </div>
                     
                     <div class="md:col-span-2 pt-2">
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 px-4 rounded-md transition-colors border border-emerald-500 shadow">
+                        <button type="submit" class="ds-btn ds-btn-md ds-btn-primary w-full">
                             Save Goal Targets
                         </button>
                     </div>
@@ -192,23 +192,23 @@
     </div>
 
     <!-- 12C: Weakness Breakdown -->
-    <div class="bg-slate-900 border border-slate-800 rounded-lg p-8 shadow-lg">
+    <div class="ds-card p-8">
         <div class="flex items-start justify-between mb-6 border-b border-slate-800 pb-4">
             <div>
                 <h3 class="text-2xl font-bold text-slate-100">Weakness Breakdown</h3>
-                <p class="text-slate-400 text-sm mt-1">Mistake categories from the last 30 days — sorted by frequency.</p>
+                <p class="ds-muted mt-1">Mistake categories from the last 30 days — sorted by frequency.</p>
             </div>
             @if($topWeakness)
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-bold shrink-0">
+                <x-ui.badge variant="red" class="shrink-0">
                     ⚠ Top weakness: {{ $topWeakness->category }}
-                </div>
+                </x-ui.badge>
             @endif
         </div>
 
         @if($weaknesses->isEmpty())
-            <div class="text-center py-8 text-slate-500">
-                <p class="text-sm">No mistakes logged in the last 30 days.</p>
-                <p class="text-xs mt-1">Submit a Writing Coach session to start tracking your weaknesses.</p>
+            <div class="text-center py-8">
+                <p class="ds-muted">No mistakes logged in the last 30 days.</p>
+                <p class="ds-muted text-xs mt-1">Submit a Writing Coach session to start tracking your weaknesses.</p>
             </div>
         @else
             @php
@@ -246,16 +246,17 @@
     </div>
 
     <!-- 13F: Reading Analytics -->
-    <div class="bg-slate-900 border border-slate-800 rounded-lg p-8 shadow-lg">
+    <div class="ds-card p-8">
         <div class="flex items-start justify-between mb-6 border-b border-slate-800 pb-4">
             <div>
                 <h3 class="text-2xl font-bold text-slate-100">Reading Analytics</h3>
-                <p class="text-slate-400 text-sm mt-1">Your recent reading performance and comprehension trends.</p>
+                <p class="ds-muted mt-1">Your recent reading performance and comprehension trends.</p>
             </div>
             <div class="flex flex-col items-end">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-bold">
+                {{-- Retired indigo -> slate --}}
+                <x-ui.badge>
                     📖 Level: {{ $readingLevel }}
-                </div>
+                </x-ui.badge>
                 <div class="text-[10px] text-slate-500 mt-2 font-medium uppercase tracking-wider">
                     @if($sessionsUntilCheck > 0)
                         Next eval in {{ $sessionsUntilCheck }} session{{ $sessionsUntilCheck > 1 ? 's' : '' }}
@@ -268,8 +269,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Avg WPM -->
-            <div class="bg-slate-950 border border-slate-800 rounded-lg p-6 flex flex-col items-center justify-center text-center">
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-3">Average Reading Speed</p>
+            <div class="ds-card-nested p-6 flex flex-col items-center justify-center text-center">
+                <p class="ds-eyebrow mb-3">Average Reading Speed</p>
                 <div class="flex items-baseline gap-2">
                     <span class="text-5xl font-bold text-emerald-400">{{ $avgWpm }}</span>
                     <span class="text-xl text-slate-500 font-medium">WPM</span>
@@ -278,15 +279,15 @@
             </div>
 
             <!-- Trends Chart -->
-            <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-lg p-6">
+            <div class="lg:col-span-2 ds-card-nested p-6">
                 @if(count($readingChartLabels) > 0)
                     <div class="h-48 relative">
                         <canvas id="readingChart"></canvas>
                     </div>
                 @else
-                    <div class="h-full flex flex-col items-center justify-center text-slate-500 py-8">
-                        <p class="text-sm">No reading sessions logged yet.</p>
-                        <p class="text-xs mt-1">Complete an AI Reading session to see trends.</p>
+                    <div class="h-full flex flex-col items-center justify-center py-8">
+                        <p class="ds-muted">No reading sessions logged yet.</p>
+                        <p class="ds-muted text-xs mt-1">Complete an AI Reading session to see trends.</p>
                     </div>
                 @endif
             </div>
@@ -295,20 +296,20 @@
 
     <!-- Overall All-Time Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Total Words</p>
+        <div class="ds-card p-6 text-center">
+            <p class="ds-eyebrow mb-2">Total Words</p>
             <p class="text-3xl font-bold text-slate-200">{{ number_format($overall['vocabulary']) }}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Total Lessons</p>
+        <div class="ds-card p-6 text-center">
+            <p class="ds-eyebrow mb-2">Total Lessons</p>
             <p class="text-3xl font-bold text-slate-200">{{ number_format($overall['grammar']) }}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Total Articles</p>
+        <div class="ds-card p-6 text-center">
+            <p class="ds-eyebrow mb-2">Total Articles</p>
             <p class="text-3xl font-bold text-slate-200">{{ number_format($overall['reading']) }}</p>
         </div>
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg text-center shadow">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Total Journals</p>
+        <div class="ds-card p-6 text-center">
+            <p class="ds-eyebrow mb-2">Total Journals</p>
             <p class="text-3xl font-bold text-slate-200">{{ number_format($overall['writing']) }}</p>
         </div>
     </div>
