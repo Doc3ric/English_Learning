@@ -4,14 +4,14 @@
     </x-slot>
 
     <!-- Header Stats -->
-    <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-8 shadow-xl text-white flex flex-col md:flex-row items-center justify-between">
+    <div class="ds-card-accent-amber p-8 flex flex-col md:flex-row items-center justify-between">
         <div>
-            <h2 class="text-3xl font-bold mb-2">Your Trophy Room</h2>
-            <p class="text-amber-100 opacity-90">Keep pushing your limits to unlock more badges!</p>
+            <h2 class="text-3xl font-bold text-slate-100 mb-2">Your Trophy Room</h2>
+            <p class="ds-muted">Keep pushing your limits to unlock more badges!</p>
         </div>
         <div class="mt-6 md:mt-0 text-center">
-            <div class="text-5xl font-black mb-1">{{ $totalUnlocked }}<span class="text-2xl text-amber-200">/{{ $totalAchievements }}</span></div>
-            <p class="ds-eyebrow !text-amber-200">Unlocked</p>
+            <div class="text-5xl font-black text-amber-400 mb-1">{{ $totalUnlocked }}<span class="text-2xl text-slate-500">/{{ $totalAchievements }}</span></div>
+            <p class="ds-eyebrow !text-amber-500">Unlocked</p>
         </div>
     </div>
 
