@@ -53,7 +53,7 @@
 
         {{-- ── READING ───────────────────────────────────────────────────── --}}
         @if($state === 'reading' && $article)
-        <div class="space-y-6">
+        <div class="space-y-6" x-data="readingTimer({{ now()->timestamp - $readingStartTime }})">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3 flex-wrap">
                     <x-ui.badge>{{ $article['cefr_level'] }}</x-ui.badge>
@@ -65,6 +65,11 @@
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         {{ number_format($article['word_count']) }} words
                     </span>
+                    
+                    <div class="ds-card-nested !py-1 !px-3 rounded-full flex items-center gap-1.5 text-emerald-400 font-mono text-sm ml-2">
+                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span x-text="formattedTime()">00:00</span>
+                    </div>
                 </div>
                 <button wire:click="startNew" class="ds-btn ds-btn-sm ds-btn-secondary">
                     <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -95,6 +100,30 @@
                     I've Finished Reading
                 </button>
             </div>
+            
+            <script>
+                document.addEventListener('alpine:init', () => {
+                    if (!Alpine.data('readingTimer')) {
+                        Alpine.data('readingTimer', (initialElapsed) => ({
+                            elapsed: initialElapsed,
+                            interval: null,
+                            init() {
+                                if (this.elapsed >= 0) {
+                                    this.interval = setInterval(() => {
+                                        this.elapsed++;
+                                    }, 1000);
+                                }
+                            },
+                            formattedTime() {
+                                if (this.elapsed < 0) return '00:00';
+                                let m = Math.floor(this.elapsed / 60).toString().padStart(2, '0');
+                                let s = (this.elapsed % 60).toString().padStart(2, '0');
+                                return `${m}:${s}`;
+                            }
+                        }));
+                    }
+                });
+            </script>
         </div>
         @endif
 
@@ -376,7 +405,10 @@
                     <h2 class="text-3xl font-bold text-slate-100 mb-2">Good Practice</h2>
                 @endif
 
-                <p class="font-medium text-lg mb-6 {{ $passed ? 'text-emerald-400' : 'text-amber-400' }}">Score: {{ $quizScore }} / {{ $total }}</p>
+                <p class="font-medium text-lg mb-6 {{ $passed ? 'text-emerald-400' : 'text-amber-400' }}">
+                    Score: {{ $quizScore }} / {{ $total }}
+                    @if($wpm) <span class="mx-2 text-slate-600">|</span> Speed: {{ $wpm }} WPM @endif
+                </p>
                 
                 <div class="flex justify-center gap-3">
                     <button wire:click="startNew" class="ds-btn ds-btn-md ds-btn-primary">

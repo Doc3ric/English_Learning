@@ -136,7 +136,15 @@ class Index extends Component
         $topWeakness = $weaknesses->first();
 
         // 13F: Reading Analytics
-        $avgWpm = round(\App\Models\ReadingAttempt::avg('words_per_minute') ?? 0);
+        $avgWpmTracker = \App\Models\ReadingAttempt::avg('words_per_minute') ?? 0;
+        $avgWpmAI = \App\Models\ReadingSession::avg('words_per_minute') ?? 0;
+        $countTracker = \App\Models\ReadingAttempt::whereNotNull('words_per_minute')->count();
+        $countAI = \App\Models\ReadingSession::whereNotNull('words_per_minute')->count();
+        
+        $totalWpmCount = $countTracker + $countAI;
+        $avgWpm = $totalWpmCount > 0 
+            ? round((($avgWpmTracker * $countTracker) + ($avgWpmAI * $countAI)) / $totalWpmCount) 
+            : 0;
 
         $readingSessions = \App\Models\ReadingSession::where('user_id', \Illuminate\Support\Facades\Auth::id())
             ->whereNotNull('quiz_score')

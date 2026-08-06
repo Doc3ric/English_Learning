@@ -41,6 +41,11 @@ class Index extends Component
     public int $vocabAddedCount = 0;
     public int $mistakesLoggedCount = 0;
 
+    // 13F — Reading Analytics (WPM)
+    public ?int $readingStartTime = null;
+    public ?int $timeTakenSeconds = null;
+    public ?int $wpm = null;
+
     /**
      * 14 topics — deliberately different subjects and a +6 day offset
      * from Writing Coach's 12-topic list so they never coincide on the same day.
@@ -133,6 +138,7 @@ class Index extends Component
 
         $this->article   = $result;
         $this->sessionId = $session->id;
+        $this->readingStartTime = now()->timestamp;
         $this->state     = 'reading';
     }
 
@@ -140,6 +146,24 @@ class Index extends Component
 
     public function startSummary()
     {
+        if ($this->readingStartTime) {
+            $this->timeTakenSeconds = now()->timestamp - $this->readingStartTime;
+            $wordCount = $this->article['word_count'] ?? 0;
+            
+            if ($this->timeTakenSeconds > 0) {
+                $this->wpm = (int) round($wordCount / ($this->timeTakenSeconds / 60));
+                
+                $session = ReadingSession::find($this->sessionId);
+                if ($session) {
+                    $session->update([
+                        'time_taken_seconds' => $this->timeTakenSeconds,
+                        'words_per_minute'   => $this->wpm,
+                    ]);
+                }
+            }
+            $this->readingStartTime = null; // Clear so it isn't repeatedly calculated
+        }
+
         $this->summaryResponse    = '';
         $this->summaryWordCount   = 0;
         $this->showSummaryWarning = false;
@@ -329,7 +353,8 @@ class Index extends Component
             'article', 'sessionId', 'errorMessage',
             'summaryResponse', 'summaryWordCount', 'showSummaryWarning',
             'summaryResult', 'summaryError',
-            'quizData', 'quizAnswers', 'quizScore', 'quizError'
+            'quizData', 'quizAnswers', 'quizScore', 'quizError',
+            'readingStartTime', 'timeTakenSeconds', 'wpm'
         ]);
         $this->state = 'idle';
     }
