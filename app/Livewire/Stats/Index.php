@@ -68,10 +68,13 @@ class Index extends Component
 
     private function calculateStreak()
     {
-        $dates = StudySession::selectRaw('DATE(created_at) as date')
-            ->groupBy('date')
-            ->orderBy('date', 'desc')
-            ->pluck('date')
+        $dates = StudySession::orderBy('created_at', 'desc')
+            ->pluck('created_at')
+            ->map(function ($date) {
+                return Carbon::parse($date)->timezone(config('app.timezone'))->format('Y-m-d');
+            })
+            ->unique()
+            ->values()
             ->toArray();
 
         if (empty($dates)) {

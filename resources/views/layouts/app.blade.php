@@ -26,11 +26,11 @@
                         ✍ Writing Coach
                     </div>
                 </a>
-                <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Dashboard</a>
-                <a href="{{ route('vocabulary') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('vocabulary') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Vocabulary</a>
-                <a href="{{ route('grammar') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('grammar*') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Grammar</a>
-                <a href="{{ route('mistakes') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('mistakes') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Mistakes</a>
-                <a href="{{ route('reading') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('reading*') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Reading Tracker</a>
+                <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Dashboard</a>
+                <a href="{{ route('vocabulary') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('vocabulary') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Vocabulary</a>
+                <a href="{{ route('grammar') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('grammar*') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Grammar</a>
+                <a href="{{ route('mistakes') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('mistakes') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Mistakes</a>
+                <a href="{{ route('reading') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('reading*') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Reading Tracker</a>
                 <a href="{{ route('ai-reading') }}" class="block px-3 py-2.5 rounded-md text-sm font-semibold transition-colors {{ request()->routeIs('ai-reading') ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20' : 'bg-sky-600/10 text-sky-400 border border-sky-600/30 hover:bg-sky-600/20' }}">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -39,20 +39,23 @@
                 </a>
                 
                 <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Practice & Track</p>
-                <a href="{{ route('journal') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('journal') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Journal</a>
-                <a href="{{ route('timer') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timer') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Study Timer</a>
-                <a href="{{ route('timeline') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('timeline') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Timeline</a>
-                <a href="{{ route('stats') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('stats') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Stats & Goals</a>
-                <a href="{{ route('achievements') }}" class="block px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('achievements') ? 'bg-slate-800/50 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-400' }}">Achievements</a>
+                <a href="{{ route('journal') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('journal') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Journal</a>
+                <a href="{{ route('timer') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('timer') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Study Timer</a>
+                <a href="{{ route('timeline') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('timeline') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Timeline</a>
+                <a href="{{ route('stats') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('stats') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Stats & Goals</a>
+                <a href="{{ route('achievements') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('achievements') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Achievements</a>
             </nav>
 
             <!-- User Info (Bottom) -->
             <div class="mt-auto pt-6 border-t border-slate-800 p-4">
                 <div class="flex items-center gap-3">
-                    <div class="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-sm font-medium text-slate-300">
-                        Me
+                    <div class="h-9 w-9 rounded-full bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-300 shadow-inner">
+                        {{ strtoupper(substr(auth()->user()->name ?? 'L', 0, 1)) }}
                     </div>
-                    <div class="text-sm font-medium text-slate-300">Learner</div>
+                    <div class="flex flex-col truncate">
+                        <span class="text-sm font-semibold text-slate-200 truncate">{{ auth()->user()->name ?? 'Learner' }}</span>
+                        <span class="text-xs text-slate-500 truncate">{{ auth()->user()->email ?? 'learner@englishos.local' }}</span>
+                    </div>
                 </div>
             </div>
         </aside>
