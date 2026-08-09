@@ -1,5 +1,5 @@
 <div>
-    <h3 class="ds-section-title mb-6">Review (Last 7 Days)</h3>
+    <h3 class="ds-section-title mb-6">Today's Review</h3>
 
     @if($words->isEmpty())
         <x-ui.empty-state
@@ -24,12 +24,15 @@
                         "{{ $word->example_sentence }}"
                     </div>
 
-                    <div class="flex gap-2">
-                        <button class="ds-btn ds-btn-sm ds-btn-secondary flex-1">
-                            Needs Review
+                    <div class="flex gap-2 mt-4">
+                        <button wire:click="gradeWord({{ $word->id }}, 'hard')" class="ds-btn ds-btn-sm ds-btn-secondary flex-1 hover:!bg-red-500/20 hover:!text-red-400 hover:!border-red-500/30">
+                            Hard (Box 1)
                         </button>
-                        <button wire:click="markMastered({{ $word->id }})" class="ds-btn ds-btn-sm ds-btn-primary flex-1">
-                            Still Remember (Master)
+                        <button wire:click="gradeWord({{ $word->id }}, 'medium')" class="ds-btn ds-btn-sm ds-btn-secondary flex-1 hover:!bg-amber-500/20 hover:!text-amber-400 hover:!border-amber-500/30">
+                            Medium
+                        </button>
+                        <button wire:click="gradeWord({{ $word->id }}, 'easy')" class="ds-btn ds-btn-sm ds-btn-primary flex-1 hover:!bg-emerald-600">
+                            Easy
                         </button>
                     </div>
 

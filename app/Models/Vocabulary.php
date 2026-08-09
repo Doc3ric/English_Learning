@@ -18,7 +18,17 @@ class Vocabulary extends Model
         'is_favorite',
         'is_mastered',
         'source',
-        'source_reading_article_id'
+        'source_reading_article_id',
+        'leitner_box',
+        'next_review_date',
+        'last_reviewed_at'
+    ];
+
+    protected $casts = [
+        'is_favorite' => 'boolean',
+        'is_mastered' => 'boolean',
+        'next_review_date' => 'date',
+        'last_reviewed_at' => 'datetime',
     ];
 
     public function readingArticle()

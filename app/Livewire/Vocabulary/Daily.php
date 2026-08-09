@@ -17,7 +17,7 @@ class Daily extends Component
     public function getWordsProperty()
     {
         // Get up to 10 words that haven't been mastered and have no example sentence (meaning they haven't been "learned" today)
-        return Vocabulary::where('is_mastered', false)
+        return Vocabulary::where('leitner_box', '<', 5)
             ->whereNull('example_sentence')
             ->limit(10)
             ->get();

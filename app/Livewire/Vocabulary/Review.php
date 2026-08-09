@@ -10,21 +10,45 @@ class Review extends Component
 {
     public function getReviewWordsProperty()
     {
-        // Words added in the last 7 days, not yet mastered, but have an example sentence.
-        // Importantly, only show words from *previous* days (not today's words).
-        return Vocabulary::where('is_mastered', false)
+        // Words that need review today or haven't been reviewed yet.
+        return Vocabulary::where('leitner_box', '<', 5)
             ->whereNotNull('example_sentence')
-            ->where('created_at', '<', Carbon::today())
-            ->where('created_at', '>=', Carbon::today()->subDays(7))
+            ->where(function ($query) {
+                $query->whereNull('next_review_date')
+                      ->orWhere('next_review_date', '<=', Carbon::today());
+            })
             ->get();
     }
 
-    public function markMastered($id)
+    public function gradeWord($id, $difficulty)
     {
         $word = Vocabulary::find($id);
-        if ($word) {
-            $word->update(['is_mastered' => true]);
+        if (!$word) return;
+
+        $box = $word->leitner_box ?? 1;
+
+        if ($difficulty === 'hard') {
+            $box = 1;
+        } elseif ($difficulty === 'easy') {
+            $box = min(5, $box + 1);
         }
+        // medium stays the same box
+
+        $intervals = [
+            1 => 1,
+            2 => 3,
+            3 => 7,
+            4 => 14,
+            5 => 30
+        ];
+
+        $days = $intervals[$box] ?? 1;
+
+        $word->update([
+            'leitner_box' => $box,
+            'last_reviewed_at' => now(),
+            'next_review_date' => Carbon::today()->addDays($days)->toDateString(),
+        ]);
     }
 
     public function render()
