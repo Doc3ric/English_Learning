@@ -8,6 +8,13 @@ use Carbon\Carbon;
 
 class Review extends Component
 {
+    public $totalToReview = 0;
+
+    public function mount()
+    {
+        $this->totalToReview = $this->reviewWords->count();
+    }
+
     public function getReviewWordsProperty()
     {
         // Words that need review today or haven't been reviewed yet.
