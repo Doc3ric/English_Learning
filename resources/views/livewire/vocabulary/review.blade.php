@@ -26,7 +26,7 @@
         
         <div class="max-w-xl mx-auto w-full py-4" wire:key="flashcard-{{ $word->id }}">
             <!-- Flashcard Container -->
-            <div class="relative w-full h-80 perspective-1000 cursor-pointer group" @click="flipped = !flipped">
+            <div class="relative w-full perspective-1000 cursor-pointer group" style="height: 350px;" @click="flipped = !flipped">
                 <div class="w-full h-full relative transition-transform duration-500 transform-style-3d shadow-2xl rounded-2xl" 
                      :class="{ 'rotate-y-180': flipped }">
                      

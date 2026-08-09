@@ -5,7 +5,7 @@
 
     <x-ui.tab-bar>
         <x-ui.tab value="daily"  label="Today's Words"      :active="$activeTab" wire:click="$set('activeTab', 'daily')" />
-        <x-ui.tab value="review" label="Review (Last 7 Days)" :active="$activeTab" wire:click="$set('activeTab', 'review')" />
+        <x-ui.tab value="review" label="Today's Review" :active="$activeTab" wire:click="$set('activeTab', 'review')" />
         <x-ui.tab value="add"    label="Add Word"            :active="$activeTab" wire:click="$set('activeTab', 'add')" />
     </x-ui.tab-bar>
 
