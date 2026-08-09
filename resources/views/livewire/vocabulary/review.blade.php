@@ -31,7 +31,7 @@
                      :class="{ 'rotate-y-180': flipped }">
                      
                     <!-- Front (Word) -->
-                    <div class="absolute inset-0 backface-hidden ds-card border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:border-emerald-500/30 transition-colors">
+                    <div class="absolute inset-0 w-full h-full backface-hidden ds-card border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:border-emerald-500/30 transition-colors">
                         <span class="ds-muted italic text-sm mb-3 uppercase tracking-widest font-semibold">{{ $word->part_of_speech ?? 'Vocabulary' }}</span>
                         <h4 class="text-5xl font-black text-slate-100 text-center drop-shadow-md">{{ $word->word }}</h4>
                         <div class="absolute bottom-6 text-slate-500 text-sm flex items-center gap-2 font-medium">
@@ -41,7 +41,7 @@
                     </div>
 
                     <!-- Back (Meaning) -->
-                    <div class="absolute inset-0 backface-hidden rotate-y-180 ds-card border-2 border-emerald-500/30 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-900 to-slate-950 text-center overflow-y-auto shadow-emerald-500/10">
+                    <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 ds-card border-2 border-emerald-500/30 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-900 to-slate-950 text-center overflow-y-auto shadow-emerald-500/10">
                         <h4 class="text-3xl font-bold text-slate-100 mb-2">{{ $word->word }}</h4>
                         @if($word->pronunciation)
                             <p class="text-emerald-400 font-mono mb-4 text-sm bg-emerald-500/10 px-2 py-0.5 rounded">{{ $word->pronunciation }}</p>
