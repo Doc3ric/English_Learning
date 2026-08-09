@@ -31,10 +31,10 @@
                      :class="{ 'rotate-y-180': flipped }">
                      
                     <!-- Front (Word) -->
-                    <div class="absolute inset-0 backface-hidden ds-card border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:border-emerald-500/30 transition-colors" style="height: 350px;">
+                    <div class="absolute inset-0 backface-hidden ds-card border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:border-emerald-500/30 transition-colors" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 350px;">
                         <span class="ds-muted italic text-sm mb-3 uppercase tracking-widest font-semibold">{{ $word->part_of_speech ?? 'Vocabulary' }}</span>
                         <h4 class="text-5xl font-black text-slate-100 text-center drop-shadow-md break-words w-full px-4">{{ $word->word }}</h4>
-                        <div class="absolute bottom-6 text-slate-500 text-sm flex items-center gap-2 font-medium">
+                        <div class="text-slate-500 text-sm flex items-center gap-2 font-medium" style="position: absolute; bottom: 1.5rem;">
                             <svg class="w-4 h-4 animate-bounce text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-3 3m0 0l-3-3m3 3V9m0-6a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Click to reveal
                         </div>
