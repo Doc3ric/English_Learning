@@ -1,4 +1,4 @@
-<div x-data="{ flipped: false }" @word-graded.window="flipped = false">
+<div>
     <style>
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
@@ -24,7 +24,7 @@
     @else
         @php $word = $words->first(); @endphp
         
-        <div class="max-w-xl mx-auto w-full py-4" wire:key="flashcard-{{ $word->id }}">
+        <div class="max-w-xl mx-auto w-full py-4" wire:key="flashcard-{{ $word->id }}" x-data="{ flipped: false }">
             <!-- Flashcard Container -->
             <div class="relative w-full perspective-1000 cursor-pointer group" style="height: 350px;" @click="flipped = !flipped">
                 <div class="w-full h-full relative transition-transform duration-500 transform-style-3d shadow-2xl rounded-2xl" 
@@ -33,7 +33,7 @@
                     <!-- Front (Word) -->
                     <div class="absolute inset-0 w-full h-full backface-hidden ds-card border-2 border-slate-700/50 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:border-emerald-500/30 transition-colors">
                         <span class="ds-muted italic text-sm mb-3 uppercase tracking-widest font-semibold">{{ $word->part_of_speech ?? 'Vocabulary' }}</span>
-                        <h4 class="text-5xl font-black text-slate-100 text-center drop-shadow-md">{{ $word->word }}</h4>
+                        <h4 class="text-5xl font-black text-slate-100 text-center drop-shadow-md break-words w-full px-4">{{ $word->word }}</h4>
                         <div class="absolute bottom-6 text-slate-500 text-sm flex items-center gap-2 font-medium">
                             <svg class="w-4 h-4 animate-bounce text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-3 3m0 0l-3-3m3 3V9m0-6a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Click to reveal
