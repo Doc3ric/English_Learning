@@ -84,7 +84,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             {{-- Yesterday's Improvement --}}
-            <div class="ds-card p-6">
+            <div class="ds-card p-6 hover:border-slate-700/80 transition-colors">
                 <h3 class="ds-eyebrow mb-5 flex items-center gap-2">
                     <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     Yesterday's Improvement
@@ -209,7 +209,7 @@
                 ];
             @endphp
 
-            <div class="grid grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
                 @foreach($rings as $r)
                     <div class="text-center">
                         <div class="relative w-16 h-16 mx-auto mb-2">
