@@ -46,18 +46,18 @@ class Index extends Component
     public string $prompt = '';
 
     private const PROMPTS = [
-        "Describe what you did today.",
-        "Explain a challenge you recently faced and how you handled it.",
-        "Describe your favorite app or tool and why you use it.",
-        "Write about a place you'd like to visit and why.",
-        "Describe a person who has influenced you.",
-        "Write about a habit you want to build or break.",
-        "Describe your morning routine.",
-        "Write about something you learned recently.",
-        "Describe your ideal work or study environment.",
-        "Write about a mistake you made and what you learned from it.",
-        "Describe a goal you're working toward.",
-        "Write about something you're grateful for today.",
+        "Describe what you did today. Focus on three key activities, how your day went, and one thing you accomplished.",
+        "Explain a challenge you recently faced. What was the situation, how did you handle it, and what was the result?",
+        "Describe your favorite app or digital tool. What problem does it solve for you, and why do you rely on it?",
+        "Write about a country or city you would love to visit. What draws you there, and what would you do first?",
+        "Describe a person who has strongly influenced your life or career. Who are they, how did they inspire you, and what key lesson did you learn from them?",
+        "Write about a habit you want to build or break. Why is this important to you, and what specific steps are you taking?",
+        "Describe your current or ideal morning routine. Walk through your steps from waking up to starting your day.",
+        "Write about a skill or topic you learned recently. Why did you choose it, and how do you plan to use this knowledge?",
+        "Describe your ideal work or study environment. What kind of setup, lighting, and atmosphere help you stay focused?",
+        "Write about a mistake you made in the past. What happened, how did you handle it, and what lesson did you gain?",
+        "Describe a personal or professional goal you are working toward. Why does it matter, and how will you achieve it?",
+        "Write about three things you are grateful for today and explain why each one added value to your day.",
     ];
 
     public function mount()
