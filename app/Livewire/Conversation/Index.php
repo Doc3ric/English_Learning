@@ -157,6 +157,9 @@ class Index extends Component
     public function render()
     {
         return view('livewire.conversation.index')
-            ->layout('layouts.app', ['title' => 'AI Conversation']);
+            ->layout('layouts.app', [
+                'title' => 'AI Conversation',
+                'fullHeight' => true,
+            ]);
     }
 }

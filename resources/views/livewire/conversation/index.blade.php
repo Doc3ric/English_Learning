@@ -1,5 +1,3 @@
-<x-slot:fullHeight>{{ true }}</x-slot:fullHeight>
-
 <div class="flex flex-col h-full">
 
     @if($state === 'scenarios')
@@ -14,10 +12,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     @foreach(\App\Livewire\Conversation\Index::SCENARIOS as $s)
                         <button wire:click="startConversation('{{ $s['id'] }}')"
+                                @click="if (window.speechSynthesis) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(''); window.speechSynthesis.speak(u); }"
                                 wire:loading.attr="disabled"
-                                class="ds-card p-6 text-left hover:border-emerald-500/40 hover:shadow-[0_0_25px_rgba(16,185,129,0.12)] transition-all group cursor-pointer">
+                                class="ds-card p-6 text-left hover:border-violet-500/40 hover:shadow-[0_0_25px_rgba(139,92,246,0.12)] transition-all group cursor-pointer">
                             <div class="text-4xl mb-3">{{ $s['icon'] }}</div>
-                            <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors mb-1">{{ $s['title'] }}</h3>
+                            <h3 class="text-lg font-bold text-white group-hover:text-violet-400 transition-colors mb-1">{{ $s['title'] }}</h3>
                             <p class="text-xs text-slate-400">{{ $s['desc'] }}</p>
                         </button>
                     @endforeach
@@ -25,7 +24,7 @@
 
                 <div wire:loading class="text-center mt-8">
                     <div class="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-sm">
-                        <svg class="animate-spin w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24">
+                        <svg class="animate-spin w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
@@ -37,12 +36,12 @@
 
     @elseif($state === 'chat')
         {{-- ================ CHAT INTERFACE ================ --}}
-        <div class="flex flex-col h-full"
+        <div class="flex flex-col h-full overflow-hidden"
              x-data="conversationRecorder()"
              @speak-reply.window="queueSpeak($event.detail.text)">
 
             {{-- Chat Header --}}
-            <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/60 backdrop-blur">
+            <div class="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/80 backdrop-blur z-10">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-lg">🤖</div>
                     <div>
@@ -78,6 +77,11 @@
                             <div class="max-w-[80%]">
                                 <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
                                     <p class="text-sm text-slate-200 leading-relaxed">{{ $msg['text'] }}</p>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1 px-1">
+                                    <button @click="doSpeak(@js($msg['text']))" class="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1 transition-colors">
+                                        <span>🔊</span> Listen
+                                    </button>
                                 </div>
                                 @if(!empty($msg['corrections']))
                                     <div class="mt-2 space-y-1.5">
@@ -135,19 +139,19 @@
             </div>
 
             {{-- ===== MIC INPUT BAR (always visible at bottom) ===== --}}
-            <div class="flex-shrink-0 bg-slate-900/80 backdrop-blur border-t border-slate-800 px-6 py-5">
+            <div class="flex-shrink-0 bg-slate-900 border-t border-slate-800 px-6 py-4 z-10">
 
                 {{-- Hidden Livewire file input --}}
                 <input type="file" wire:model="audioFile" x-ref="audioInput" class="hidden" accept="audio/*" />
 
-                <div class="flex flex-col items-center gap-3">
+                <div class="flex flex-col items-center gap-2">
 
                     {{-- Status label --}}
                     <p class="text-xs font-medium transition-colors"
-                       :class="isRecording ? 'text-red-400' : (isProcessing ? 'text-amber-400' : 'text-slate-500')"
-                       x-text="isRecording ? '🔴 Recording... Release to send'
-                              : (isProcessing ? '⏳ Transcribing & thinking...'
-                              : 'Hold the button and speak')">
+                       :class="isRecording ? 'text-red-400 font-bold' : (isProcessing ? 'text-amber-400 font-bold' : 'text-slate-400')"
+                       x-text="isRecording ? '🔴 Recording... Release button to send'
+                              : (isProcessing ? '⏳ Processing audio & generating reply...'
+                              : 'Hold microphone button to speak')">
                     </p>
 
                     {{-- Mic Button --}}
@@ -157,7 +161,7 @@
                             @touchstart.prevent="startRecording()"
                             @touchend.prevent="stopRecording()"
                             :disabled="isProcessing"
-                            class="w-20 h-20 rounded-full flex items-center justify-center shadow-xl transition-all duration-150 select-none"
+                            class="w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all duration-150 select-none cursor-pointer"
                             :class="isRecording
                                 ? 'bg-red-500 border-4 border-red-300 scale-110 shadow-red-500/50'
                                 : (isProcessing
@@ -165,20 +169,20 @@
                                     : 'bg-violet-600 border-2 border-violet-400 hover:bg-violet-500 hover:scale-105 hover:shadow-violet-500/40 active:scale-95')">
 
                         <template x-if="isProcessing">
-                            <svg class="w-7 h-7 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-white animate-spin" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                             </svg>
                         </template>
                         <template x-if="!isProcessing">
-                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
                             </svg>
                         </template>
                     </button>
 
                     {{-- Waveform visual when recording --}}
-                    <div class="flex gap-1 h-4 items-end" x-show="isRecording">
+                    <div class="flex gap-1 h-3 items-end" x-show="isRecording">
                         <span class="w-1 bg-red-400 rounded animate-bounce" style="height:60%;animation-delay:0ms"></span>
                         <span class="w-1 bg-red-400 rounded animate-bounce" style="height:100%;animation-delay:100ms"></span>
                         <span class="w-1 bg-red-400 rounded animate-bounce" style="height:40%;animation-delay:200ms"></span>
@@ -203,11 +207,10 @@
 
                 async startRecording() {
                     if (this.isRecording || this.isProcessing) return;
-                    // Cancel any ongoing speech so mic picks up cleanly
-                    window.speechSynthesis.cancel();
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+
                     try {
                         this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        // Try opus/webm, fall back to default
                         const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
                             ? 'audio/webm;codecs=opus'
                             : '';
@@ -223,12 +226,14 @@
                             const type = this.mediaRecorder.mimeType || 'audio/webm';
                             const blob = new Blob(this.audioChunks, { type });
                             this.uploadAudio(blob, type);
-                            this.stream.getTracks().forEach(t => t.stop());
+                            if (this.stream) {
+                                this.stream.getTracks().forEach(t => t.stop());
+                            }
                         };
-                        this.mediaRecorder.start(100); // collect every 100ms
+                        this.mediaRecorder.start(100);
                         this.isRecording = true;
                     } catch (err) {
-                        alert('Microphone access denied. Please allow mic access in your browser and try again.');
+                        alert('Microphone access denied. Please allow mic access in your browser.');
                         console.error(err);
                     }
                 },
@@ -248,13 +253,11 @@
                     this.$refs.audioInput.files = dt.files;
                     this.$refs.audioInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-                    // Watch for Livewire to finish updating, then reset processing state
                     const done = () => {
                         this.isProcessing = false;
                         this.$nextTick(() => {
                             const el = document.getElementById('chat-bottom');
                             if (el) el.scrollIntoView({ behavior: 'smooth' });
-                            // Speak queued text now that Livewire re-render is done
                             if (this.pendingSpeech) {
                                 this.doSpeak(this.pendingSpeech);
                                 this.pendingSpeech = null;
@@ -262,23 +265,18 @@
                         });
                     };
 
-                    // Livewire 3 hook
                     if (window.Livewire) {
-                        const unsub = Livewire.hook('morph.updated', ({ component }) => {
+                        const unsub = Livewire.hook('morph.updated', () => {
                             done();
                             unsub();
                         });
-                        // Safety fallback in case hook doesn't fire
                         setTimeout(() => { this.isProcessing = false; }, 15000);
                     } else {
                         setTimeout(done, 5000);
                     }
                 },
 
-                // Called by @speak-reply.window event from Livewire
                 queueSpeak(text) {
-                    // Queue it — actual speak happens after Livewire re-render (in uploadAudio done())
-                    // For the opening AI message (no upload in progress), speak immediately
                     if (!this.isProcessing) {
                         this.doSpeak(text);
                     } else {
@@ -293,27 +291,28 @@
                     utter.lang = 'en-US';
                     utter.rate = 0.95;
                     utter.pitch = 1.0;
-                    // Pick a natural English voice if available
+
                     const voices = window.speechSynthesis.getVoices();
                     const preferred = voices.find(v =>
-                        v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Neural'))
+                        v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Samantha') || v.name.includes('Alex'))
                     ) || voices.find(v => v.lang.startsWith('en'));
                     if (preferred) utter.voice = preferred;
+
                     window.speechSynthesis.speak(utter);
                 },
 
                 toggleMute() {
                     this.isMuted = !this.isMuted;
-                    if (this.isMuted) window.speechSynthesis.cancel();
+                    if (this.isMuted && window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                    }
                 },
 
-                // Auto-scroll on init
                 init() {
                     this.$nextTick(() => {
                         const el = document.getElementById('chat-bottom');
                         if (el) el.scrollIntoView();
                     });
-                    // Warm up voices list (browsers load this lazily)
                     if (window.speechSynthesis) {
                         window.speechSynthesis.getVoices();
                         window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
