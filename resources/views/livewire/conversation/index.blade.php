@@ -166,19 +166,29 @@
                                     </button>
                                 </div>
                                 @if(!empty($msg['corrections']))
-                                    <div class="mt-2 space-y-1.5">
+                                    <div class="mt-2.5 space-y-2">
                                         @foreach($msg['corrections'] as $c)
-                                            <div class="flex items-start gap-2 text-xs px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                                <span class="text-amber-400 font-bold flex-shrink-0">📝</span>
-                                                <div>
-                                                    <span class="text-red-400 line-through">{{ $c['wrong'] ?? '' }}</span>
-                                                    <span class="text-slate-500 mx-1">→</span>
-                                                    <span class="text-emerald-400 font-semibold">{{ $c['correct'] ?? '' }}</span>
-                                                    @if(!empty($c['reason']))
-                                                        <span class="text-slate-500 ml-1">({{ $c['reason'] }})</span>
-                                                    @endif
-                                                    <span class="ml-2 text-[10px] text-amber-400/80 italic">(Saved to Mistakes)</span>
+                                            <div class="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs">
+                                                <div class="flex items-center justify-between gap-2 mb-1">
+                                                    <div class="flex items-center gap-1.5 font-bold text-amber-400">
+                                                        <span>📌</span>
+                                                        <span>{{ $c['rule'] ?? 'Grammar Correction' }}</span>
+                                                    </div>
+                                                    <span class="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">Saved to Mistakes</span>
                                                 </div>
+                                                <div class="font-medium">
+                                                    <span class="text-red-400 line-through">{{ $c['wrong'] ?? '' }}</span>
+                                                    <span class="text-slate-500 mx-1.5">→</span>
+                                                    <span class="text-emerald-400 font-bold">{{ $c['correct'] ?? '' }}</span>
+                                                </div>
+                                                @if(!empty($c['reason']))
+                                                    <p class="text-slate-300 text-[11px] mt-1">{{ $c['reason'] }}</p>
+                                                @endif
+                                                @if(!empty($c['example']))
+                                                    <div class="mt-1.5 pt-1.5 border-t border-amber-500/20 text-[11px] text-slate-400 italic">
+                                                        💡 Example: "{{ $c['example'] }}"
+                                                    </div>
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>

@@ -161,8 +161,8 @@ class Index extends Component
                     Mistake::create([
                         'wrong_text' => $c['wrong'],
                         'correct_text' => $c['correct'],
-                        'reason' => $c['reason'] ?? 'Conversation feedback',
-                        'category' => 'Grammar',
+                        'reason' => $c['reason'] ?? 'Grammar correction',
+                        'category' => $c['rule'] ?? 'Grammar',
                         'times_reviewed' => 0,
                         'source' => 'Conversation',
                     ]);
@@ -182,6 +182,11 @@ class Index extends Component
                 'corrections' => $corrections,
             ];
 
+            // Award +15 XP per message turn
+            if (Auth::user()) {
+                Auth::user()->addXp(15);
+            }
+
             // Dispatch browser event to speak the AI reply
             $this->dispatch('speak-reply', text: $result['reply']);
         } else {
@@ -193,6 +198,10 @@ class Index extends Component
 
     public function finishSession()
     {
+        // Award +50 XP completion bonus
+        if (Auth::user()) {
+            Auth::user()->addXp(50);
+        }
         $this->state = 'recap';
     }
 
