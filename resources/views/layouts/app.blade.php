@@ -79,9 +79,15 @@
                 </div>
             </header>
             
+            @if(isset($fullHeight) && $fullHeight)
+            <div class="flex-1 overflow-hidden flex flex-col">
+                {{ $slot }}
+            </div>
+            @else
             <div class="flex-1 overflow-y-auto p-8">
                 {{ $slot }}
             </div>
+            @endif
         </main>
     </div>
 
