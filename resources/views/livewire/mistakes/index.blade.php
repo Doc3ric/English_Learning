@@ -3,10 +3,17 @@
         Mistake Notebook
     </x-slot>
 
-    <x-ui.tab-bar>
-        <x-ui.tab value="list"   label="Mistake Log"   :active="$activeTab" wire:click="$set('activeTab', 'list')" />
-        <x-ui.tab value="review" label="Review Mode"   :active="$activeTab" wire:click="$set('activeTab', 'review')" />
-    </x-ui.tab-bar>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-4">
+        <x-ui.tab-bar class="mb-0">
+            <x-ui.tab value="list"   label="Mistake Log"   :active="$activeTab" wire:click="$set('activeTab', 'list')" />
+            <x-ui.tab value="review" label="Review Mode"   :active="$activeTab" wire:click="$set('activeTab', 'review')" />
+        </x-ui.tab-bar>
+
+        <a href="{{ route('mistakes.practice') }}" class="ds-btn ds-btn-md ds-btn-primary flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+            <span>🎯 Practice Weaknesses</span>
+            <span class="text-xs bg-emerald-700/50 px-2 py-0.5 rounded-full font-bold">+40 XP</span>
+        </a>
+    </div>
 
     @if($activeTab === 'list')
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">

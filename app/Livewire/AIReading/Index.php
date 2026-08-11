@@ -291,6 +291,8 @@ class Index extends Component
             ]);
         }
 
+        auth()->user()?->addXp(50);
+
         // 13E - Adaptive Difficulty Logic
         $this->evaluateLevel();
 

@@ -146,6 +146,8 @@ class Index extends Component
             'memory_context'       => $memoryContext,
         ]);
 
+        Auth::user()?->addXp(100);
+
         $this->result = $result;
         $this->sessionId = $session->id;
 

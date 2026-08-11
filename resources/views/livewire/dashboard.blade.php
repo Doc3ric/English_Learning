@@ -60,19 +60,33 @@
                     <div class="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center border border-orange-500/20 z-10 text-2xl">🔥</div>
                 </div>
 
-                {{-- Level — remap indigo → slate --}}
-                <div class="ds-card p-6 flex-1">
-                    <p class="ds-eyebrow mb-1">Current Level</p>
-                    <div class="flex items-end justify-between mb-3">
-                        <span class="text-4xl font-black text-white">{{ strtoupper($user->level) }}</span>
-                        <span class="ds-muted">Target: <span class="text-slate-300 font-bold">C1</span></span>
+                {{-- Level & XP Engine Card --}}
+                @php $xpInfo = $user->xp_level_info; @endphp
+                <div class="ds-card p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="ds-eyebrow">XP & Level</p>
+                            <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                                ⭐ {{ number_format($xpInfo['total_xp']) }} XP
+                            </span>
+                        </div>
+                        <div class="flex items-baseline justify-between mb-2">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-3xl font-black text-white">Lvl {{ $xpInfo['level'] }}</span>
+                                <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded uppercase">{{ $xpInfo['cefr'] }}</span>
+                            </div>
+                            <span class="text-xs text-slate-400 font-medium">Next: <span class="text-slate-200 font-bold">Lvl {{ $xpInfo['level'] + 1 }}</span></span>
+                        </div>
                     </div>
-                    @php
-                        $levels = ['A1'=>10,'A2'=>30,'B1'=>50,'B2'=>70,'C1'=>90,'C2'=>100];
-                        $pct = $levels[strtoupper($user->level)] ?? 10;
-                    @endphp
-                    <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div class="h-1.5 rounded-full bg-slate-500 transition-all duration-1000" style="width: {{ $pct }}%"></div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] text-slate-400 mb-1 font-medium">
+                            <span>{{ number_format($xpInfo['current_level_xp']) }} / {{ number_format($xpInfo['required_level_xp']) }} XP</span>
+                            <span>{{ $xpInfo['percentage'] }}%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner">
+                            <div class="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000" style="width: {{ $xpInfo['percentage'] }}%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,8 +190,11 @@
                             Your Writing Coach prompts and grammar lessons are now targeting this area to help you improve.
                         </p>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-slate-800">
-                        <a href="{{ route('stats') }}" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium">View full weakness breakdown →</a>
+                    <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+                        <a href="{{ route('stats') }}" class="text-xs text-slate-400 hover:text-slate-200 font-medium">Full breakdown →</a>
+                        <a href="{{ route('mistakes.practice') }}" class="ds-btn ds-btn-sm ds-btn-primary flex items-center gap-1.5 text-xs">
+                            🎯 Practice Weaknesses (+40 XP)
+                        </a>
                     </div>
                 @endif
             </div>

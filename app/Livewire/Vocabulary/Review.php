@@ -56,6 +56,8 @@ class Review extends Component
             'last_reviewed_at' => now(),
             'next_review_date' => Carbon::today()->addDays($days)->toDateString(),
         ]);
+
+        auth()->user()?->addXp(10);
     }
 
     public function render()
