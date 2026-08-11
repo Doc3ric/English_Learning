@@ -33,7 +33,7 @@
 
     @elseif($state === 'chat')
         {{-- ================ CHAT INTERFACE ================ --}}
-        <div class="max-w-3xl mx-auto flex flex-col" style="height: calc(100vh - 140px);"
+        <div class="max-w-3xl mx-auto flex flex-col" style="height: calc(100vh - 200px);"
              x-data="conversationRecorder()"
              @speak-reply.window="speakText($event.detail.text)">
 
