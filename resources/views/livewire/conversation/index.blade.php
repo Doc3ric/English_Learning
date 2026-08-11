@@ -55,12 +55,12 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button @click="toggleMute()"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors text-xs font-medium border border-slate-700">
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors text-xs font-medium border border-slate-700 cursor-pointer">
                         <span x-text="isMuted ? '🔇' : '🔊'"></span>
                         <span x-text="isMuted ? 'Muted' : 'Sound On'"></span>
                     </button>
                     <button wire:click="newConversation"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors text-xs font-medium border border-slate-700">
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors text-xs font-medium border border-slate-700 cursor-pointer">
                         ← New Topic
                     </button>
                 </div>
@@ -79,7 +79,7 @@
                                     <p class="text-sm text-slate-200 leading-relaxed">{{ $msg['text'] }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 mt-1 px-1">
-                                    <button @click="doSpeak(@js($msg['text']))" class="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1 transition-colors">
+                                    <button @click="doSpeak(@js($msg['text']))" class="text-[11px] text-slate-400 hover:text-emerald-400 flex items-center gap-1 transition-colors cursor-pointer">
                                         <span>🔊</span> Listen
                                     </button>
                                 </div>
@@ -192,134 +192,145 @@
                 </div>
             </div>
         </div>
-
-        {{-- Alpine.js Recorder --}}
-        <script>
-        function conversationRecorder() {
-            return {
-                isRecording: false,
-                isProcessing: false,
-                isMuted: false,
-                mediaRecorder: null,
-                audioChunks: [],
-                stream: null,
-                pendingSpeech: null,
-
-                async startRecording() {
-                    if (this.isRecording || this.isProcessing) return;
-                    if (window.speechSynthesis) window.speechSynthesis.cancel();
-
-                    try {
-                        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-                            ? 'audio/webm;codecs=opus'
-                            : '';
-                        this.mediaRecorder = mimeType
-                            ? new MediaRecorder(this.stream, { mimeType })
-                            : new MediaRecorder(this.stream);
-                        this.audioChunks = [];
-
-                        this.mediaRecorder.ondataavailable = (e) => {
-                            if (e.data && e.data.size > 0) this.audioChunks.push(e.data);
-                        };
-                        this.mediaRecorder.onstop = () => {
-                            const type = this.mediaRecorder.mimeType || 'audio/webm';
-                            const blob = new Blob(this.audioChunks, { type });
-                            this.uploadAudio(blob, type);
-                            if (this.stream) {
-                                this.stream.getTracks().forEach(t => t.stop());
-                            }
-                        };
-                        this.mediaRecorder.start(100);
-                        this.isRecording = true;
-                    } catch (err) {
-                        alert('Microphone access denied. Please allow mic access in your browser.');
-                        console.error(err);
-                    }
-                },
-
-                stopRecording() {
-                    if (!this.isRecording || !this.mediaRecorder) return;
-                    this.isRecording = false;
-                    this.isProcessing = true;
-                    this.mediaRecorder.stop();
-                },
-
-                uploadAudio(blob, type) {
-                    const ext = type.includes('mp4') ? 'mp4' : (type.includes('ogg') ? 'ogg' : 'webm');
-                    const file = new File([blob], `recording.${ext}`, { type });
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    this.$refs.audioInput.files = dt.files;
-                    this.$refs.audioInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-                    const done = () => {
-                        this.isProcessing = false;
-                        this.$nextTick(() => {
-                            const el = document.getElementById('chat-bottom');
-                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                            if (this.pendingSpeech) {
-                                this.doSpeak(this.pendingSpeech);
-                                this.pendingSpeech = null;
-                            }
-                        });
-                    };
-
-                    if (window.Livewire) {
-                        const unsub = Livewire.hook('morph.updated', () => {
-                            done();
-                            unsub();
-                        });
-                        setTimeout(() => { this.isProcessing = false; }, 15000);
-                    } else {
-                        setTimeout(done, 5000);
-                    }
-                },
-
-                queueSpeak(text) {
-                    if (!this.isProcessing) {
-                        this.doSpeak(text);
-                    } else {
-                        this.pendingSpeech = text;
-                    }
-                },
-
-                doSpeak(text) {
-                    if (this.isMuted || !window.speechSynthesis) return;
-                    window.speechSynthesis.cancel();
-                    const utter = new SpeechSynthesisUtterance(text);
-                    utter.lang = 'en-US';
-                    utter.rate = 0.95;
-                    utter.pitch = 1.0;
-
-                    const voices = window.speechSynthesis.getVoices();
-                    const preferred = voices.find(v =>
-                        v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Samantha') || v.name.includes('Alex'))
-                    ) || voices.find(v => v.lang.startsWith('en'));
-                    if (preferred) utter.voice = preferred;
-
-                    window.speechSynthesis.speak(utter);
-                },
-
-                toggleMute() {
-                    this.isMuted = !this.isMuted;
-                    if (this.isMuted && window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                    }
-                },
-
-                init() {
-                    this.$nextTick(() => {
-                        const el = document.getElementById('chat-bottom');
-                        if (el) el.scrollIntoView();
-                    });
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.getVoices();
-                        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-                    }
-                }
-            }
-        }
-        </script>
     @endif
 </div>
+
+{{-- Global Alpine Component Script (placed OUTSIDE @if/@elseif blocks so it loads unconditionally on initial page render) --}}
+<script>
+    function conversationRecorder() {
+        return {
+            isRecording: false,
+            isProcessing: false,
+            isMuted: false,
+            mediaRecorder: null,
+            audioChunks: [],
+            stream: null,
+            pendingSpeech: null,
+
+            async startRecording() {
+                if (this.isRecording || this.isProcessing) return;
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                        ? 'audio/webm;codecs=opus'
+                        : '';
+                    this.mediaRecorder = mimeType
+                        ? new MediaRecorder(this.stream, { mimeType })
+                        : new MediaRecorder(this.stream);
+                    this.audioChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) this.audioChunks.push(e.data);
+                    };
+                    this.mediaRecorder.onstop = () => {
+                        const type = this.mediaRecorder.mimeType || 'audio/webm';
+                        const blob = new Blob(this.audioChunks, { type });
+                        this.uploadAudio(blob, type);
+                        if (this.stream) {
+                            this.stream.getTracks().forEach(t => t.stop());
+                        }
+                    };
+                    this.mediaRecorder.start(100);
+                    this.isRecording = true;
+                } catch (err) {
+                    alert('Microphone access denied. Please allow mic access in your browser.');
+                    console.error(err);
+                }
+            },
+
+            stopRecording() {
+                if (!this.isRecording || !this.mediaRecorder) return;
+                this.isRecording = false;
+                this.isProcessing = true;
+                this.mediaRecorder.stop();
+            },
+
+            uploadAudio(blob, type) {
+                const ext = type.includes('mp4') ? 'mp4' : (type.includes('ogg') ? 'ogg' : 'webm');
+                const file = new File([blob], `recording.${ext}`, { type });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                this.$refs.audioInput.files = dt.files;
+                this.$refs.audioInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                const done = () => {
+                    this.isProcessing = false;
+                    this.$nextTick(() => {
+                        const el = document.getElementById('chat-bottom');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                        if (this.pendingSpeech) {
+                            this.doSpeak(this.pendingSpeech);
+                            this.pendingSpeech = null;
+                        }
+                    });
+                };
+
+                if (window.Livewire) {
+                    const unsub = Livewire.hook('morph.updated', () => {
+                        done();
+                        unsub();
+                    });
+                    setTimeout(() => { this.isProcessing = false; }, 15000);
+                } else {
+                    setTimeout(done, 5000);
+                }
+            },
+
+            queueSpeak(text) {
+                if (!this.isProcessing) {
+                    this.doSpeak(text);
+                } else {
+                    this.pendingSpeech = text;
+                }
+            },
+
+            doSpeak(text) {
+                if (this.isMuted || !window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'en-US';
+                utter.rate = 0.95;
+                utter.pitch = 1.0;
+
+                const voices = window.speechSynthesis.getVoices();
+                const preferred = voices.find(v =>
+                    v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Samantha') || v.name.includes('Alex'))
+                ) || voices.find(v => v.lang.startsWith('en'));
+                if (preferred) utter.voice = preferred;
+
+                window.speechSynthesis.speak(utter);
+            },
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                if (this.isMuted && window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+            },
+
+            init() {
+                this.$nextTick(() => {
+                    const el = document.getElementById('chat-bottom');
+                    if (el) el.scrollIntoView();
+                });
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.getVoices();
+                    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+                }
+            }
+        };
+    }
+
+    // Assign globally to window object so Alpine finds it unconditionally
+    window.conversationRecorder = conversationRecorder;
+
+    if (window.Alpine) {
+        Alpine.data('conversationRecorder', conversationRecorder);
+    } else {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('conversationRecorder', conversationRecorder);
+        });
+    }
+</script>
