@@ -147,6 +147,7 @@ class Index extends Component
         ]);
 
         Auth::user()?->addXp(100);
+        \App\Services\RecommendationEngineService::logAndComplete(Auth::id() ?? 1, 'writing', (string)$session->id, 900, $result['grammar_score']);
 
         $this->result = $result;
         $this->sessionId = $session->id;

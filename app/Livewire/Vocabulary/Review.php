@@ -58,6 +58,11 @@ class Review extends Component
         ]);
 
         auth()->user()?->addXp(10);
+
+        // Check if all reviews are completed
+        if ($this->reviewWords->count() <= 1) {
+            \App\Services\RecommendationEngineService::logAndComplete(auth()->id() ?? 1, 'vocabulary', null, 600);
+        }
     }
 
     public function render()

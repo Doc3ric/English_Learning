@@ -202,6 +202,7 @@ class Index extends Component
         if (Auth::user()) {
             Auth::user()->addXp(50);
         }
+        \App\Services\RecommendationEngineService::logAndComplete(Auth::id() ?? 1, 'conversation', $this->scenario, 600);
         $this->state = 'recap';
     }
 

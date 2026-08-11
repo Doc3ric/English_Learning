@@ -201,6 +201,7 @@ class Practice extends Component
         } else {
             $this->isCompleted = true;
             Auth::user()?->addXp($this->earnedXp);
+            \App\Services\RecommendationEngineService::logAndComplete(Auth::id() ?? 1, 'weakness_practice', $this->category, 300, $this->score);
         }
     }
 

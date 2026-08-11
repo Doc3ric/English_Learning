@@ -292,6 +292,7 @@ class Index extends Component
         }
 
         auth()->user()?->addXp(50);
+        \App\Services\RecommendationEngineService::logAndComplete(auth()->id() ?? 1, 'reading', (string)$this->sessionId, 600, $this->quizScore);
 
         // 13E - Adaptive Difficulty Logic
         $this->evaluateLevel();
