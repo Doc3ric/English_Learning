@@ -12,6 +12,7 @@ class DailyPlanItem extends Model
         'activity_id',
         'title',
         'description',
+        'reason',
         'route_name',
         'route_params',
         'priority',

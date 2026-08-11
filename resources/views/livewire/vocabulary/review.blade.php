@@ -27,16 +27,28 @@
         />
     @else
         @php $word = $words->first(); @endphp
-        
-        <div class="max-w-xl mx-auto w-full py-2" wire:key="flashcard-{{ $word->id }}" x-data="{ flipped: false }">
+
+        {{--
+            ★ Phase 18 Step 3: Production-over-recognition.
+            Alpine state:
+              flipped       — whether the card is showing the back
+              sentenceMode  — whether the sentence prompt is shown (after flip)
+              userSentence  — the sentence typed by the user (optional, self-assessed)
+        --}}
+        <div class="max-w-xl mx-auto w-full py-2"
+             wire:key="flashcard-{{ $word->id }}"
+             x-data="{ flipped: false, sentenceMode: false, userSentence: '' }">
+
             <!-- 3D Flashcard Container -->
-            <div class="relative w-full perspective-1000 cursor-pointer group" style="height: 380px;" @click="flipped = !flipped">
+            <div class="relative w-full perspective-1000 cursor-pointer group" style="height: 380px;"
+                 @click="if (!sentenceMode) { flipped = !flipped; if (flipped) { sentenceMode = false; } }">
                 <div class="w-full relative transition-transform duration-500 transform-style-3d shadow-2xl rounded-3xl" style="height: 380px;"
                      :class="{ 'rotate-y-180': flipped }">
-                     
+
                     <!-- FRONT OF CARD -->
-                    <div class="absolute inset-0 backface-hidden ds-card border-2 border-slate-700/60 rounded-3xl p-8 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 group-hover:border-emerald-500/40 group-hover:shadow-[0_0_35px_rgba(16,185,129,0.15)] transition-all duration-300 flex flex-col justify-between items-center text-center" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 380px;">
-                        
+                    <div class="absolute inset-0 backface-hidden ds-card border-2 border-slate-700/60 rounded-3xl p-8 bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 group-hover:border-emerald-500/40 group-hover:shadow-[0_0_35px_rgba(16,185,129,0.15)] transition-all duration-300 flex flex-col justify-between items-center text-center"
+                         style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 380px;">
+
                         <!-- Top: Part of Speech -->
                         <div class="pt-2">
                             <span class="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
@@ -62,8 +74,9 @@
                     </div>
 
                     <!-- BACK OF CARD -->
-                    <div class="absolute inset-0 backface-hidden rotate-y-180 ds-card border-2 border-emerald-500/30 rounded-3xl p-8 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-center flex flex-col justify-between overflow-y-auto shadow-emerald-500/10" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 380px;">
-                        
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 ds-card border-2 border-emerald-500/30 rounded-3xl p-8 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-center flex flex-col justify-between overflow-y-auto shadow-emerald-500/10"
+                         style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 380px;">
+
                         <div>
                             <!-- Header: Word & Pronunciation -->
                             <div class="flex items-center justify-center gap-3 mb-4">
@@ -79,10 +92,12 @@
                             </div>
 
                             <!-- Example Sentence -->
-                            <div class="bg-slate-800/40 border-l-4 border-emerald-500 p-4 rounded-r-xl text-left">
-                                <p class="text-xs uppercase font-bold text-slate-500 tracking-wider mb-1">Example Sentence</p>
-                                <p class="text-sm text-slate-300 italic">"{{ $word->example_sentence }}"</p>
-                            </div>
+                            @if($word->example_sentence)
+                                <div class="bg-slate-800/40 border-l-4 border-emerald-500 p-4 rounded-r-xl text-left">
+                                    <p class="text-xs uppercase font-bold text-slate-500 tracking-wider mb-1">Example</p>
+                                    <p class="text-sm text-slate-300 italic">"{{ $word->example_sentence }}"</p>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Synonyms / Antonyms -->
@@ -102,42 +117,77 @@
                 </div>
             </div>
 
-            <!-- GRADING ACTIONS (Slides in when flipped) -->
-            <div class="mt-8 transition-all duration-300 transform origin-top" 
-                 x-show="flipped" 
+            {{-- ★ Phase 18 Step 3: Sentence Production Prompt --}}
+            {{-- Shown after card is flipped, before grading --}}
+            <div class="mt-6 space-y-4"
+                 x-show="flipped"
                  x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 -translate-y-4 scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 scale-100">
-                 
-                 <div class="text-center text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest flex items-center justify-center gap-3">
-                    <span class="h-px bg-slate-800 flex-1"></span>
-                    How well did you know this?
-                    <span class="h-px bg-slate-800 flex-1"></span>
-                 </div>
-                 
-                <div class="grid grid-cols-3 gap-3">
-                    <!-- HARD -->
-                    <button wire:click="gradeWord({{ $word->id }}, 'hard')" 
-                            class="group p-3 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 transition-all flex flex-col items-center justify-center text-center">
-                        <span class="text-sm font-bold tracking-wide">Hard</span>
-                        <span class="text-[10px] text-red-400/70 font-medium mt-0.5">Box 1 (Tomorrow)</span>
-                    </button>
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0">
 
-                    <!-- MEDIUM -->
-                    <button wire:click="gradeWord({{ $word->id }}, 'medium')" 
-                            class="group p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/40 text-amber-400 transition-all flex flex-col items-center justify-center text-center">
-                        <span class="text-sm font-bold tracking-wide">Medium</span>
-                        <span class="text-[10px] text-amber-400/70 font-medium mt-0.5">Box {{ $word->leitner_box ?? 1 }} (Same)</span>
-                    </button>
+                <!-- Sentence production section -->
+                <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60"
+                     @click.stop>
+                    <div class="flex items-start gap-3 mb-3">
+                        <span class="text-lg">✏️</span>
+                        <div>
+                            <p class="text-sm font-bold text-white">Now use it in a sentence</p>
+                            <p class="text-xs text-slate-400 mt-0.5">
+                                Write one sentence using <span class="font-bold text-emerald-400">{{ $word->word }}</span>.
+                                This is optional and ungraded — it's for your own practice.
+                            </p>
+                        </div>
+                    </div>
 
-                    <!-- EASY -->
-                    <button wire:click="gradeWord({{ $word->id }}, 'easy')" 
-                            class="group p-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:scale-[1.02] transition-all flex flex-col items-center justify-center text-center">
-                        <span class="text-sm font-bold tracking-wide">Easy</span>
-                        <span class="text-[10px] text-emerald-100/80 font-medium mt-0.5">Box {{ min(5, ($word->leitner_box ?? 1) + 1) }}</span>
-                    </button>
+                    <textarea x-model="userSentence"
+                              @click.stop
+                              @keydown.stop
+                              rows="2"
+                              placeholder="e.g. I want to {{ strtolower($word->word) }}..."
+                              class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 resize-none transition-colors mb-3"></textarea>
+
+                    @if($word->example_sentence)
+                        <div class="text-xs text-slate-500 bg-slate-900/40 border border-slate-800/60 rounded-lg px-3 py-2">
+                            <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Model example: </span>
+                            <span class="italic text-slate-400">"{{ $word->example_sentence }}"</span>
+                        </div>
+                    @endif
                 </div>
+
+                <!-- Grading buttons -->
+                <div>
+                    <div class="text-center text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest flex items-center justify-center gap-3">
+                        <span class="h-px bg-slate-800 flex-1"></span>
+                        How well did you know this?
+                        <span class="h-px bg-slate-800 flex-1"></span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- HARD -->
+                        <button wire:click="gradeWord({{ $word->id }}, 'hard')"
+                                class="group p-3 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 transition-all flex flex-col items-center justify-center text-center">
+                            <span class="text-sm font-bold tracking-wide">Hard</span>
+                            <span class="text-[10px] text-red-400/70 font-medium mt-0.5">Box 1 (Tomorrow)</span>
+                        </button>
+
+                        <!-- MEDIUM -->
+                        <button wire:click="gradeWord({{ $word->id }}, 'medium')"
+                                class="group p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/40 text-amber-400 transition-all flex flex-col items-center justify-center text-center">
+                            <span class="text-sm font-bold tracking-wide">Medium</span>
+                            <span class="text-[10px] text-amber-400/70 font-medium mt-0.5">Box {{ $word->leitner_box ?? 1 }} (Same)</span>
+                        </button>
+
+                        <!-- EASY -->
+                        <button wire:click="gradeWord({{ $word->id }}, 'easy')"
+                                class="group p-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:scale-[1.02] transition-all flex flex-col items-center justify-center text-center">
+                            <span class="text-sm font-bold tracking-wide">Easy</span>
+                            <span class="text-[10px] text-emerald-100/80 font-medium mt-0.5">Box {{ min(5, ($word->leitner_box ?? 1) + 1) }}</span>
+                        </button>
+                    </div>
+                </div>
+
             </div>
+
         </div>
     @endif
 </div>
