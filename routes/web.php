@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/reading', \App\Livewire\Reading\Index::class)->name('reading');
     Route::get('/ai-reading', \App\Livewire\AIReading\Index::class)->name('ai-reading');
+    Route::get('/conversation', \App\Livewire\Conversation\Index::class)->name('conversation');
     Route::get('/reading/create', \App\Livewire\Reading\Form::class)->name('reading.create');
     Route::get('/reading/{id}/questions', \App\Livewire\Reading\QuestionsForm::class)->name('reading.questions.create');
     Route::get('/reading/{id}/practice', \App\Livewire\Reading\Practice::class)->name('reading.practice');

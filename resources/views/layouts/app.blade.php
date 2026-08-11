@@ -37,6 +37,12 @@
                         📖 AI Reading
                     </div>
                 </a>
+                <a href="{{ route('conversation') }}" class="block px-3 py-2.5 rounded-md text-sm font-semibold transition-colors {{ request()->routeIs('conversation') ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/20' : 'bg-violet-600/10 text-violet-400 border border-violet-600/30 hover:bg-violet-600/20' }}">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        💬 Conversation
+                    </div>
+                </a>
                 
                 <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Practice & Track</p>
                 <a href="{{ route('journal') }}" class="block px-3 py-2 rounded-md text-sm transition-colors {{ request()->routeIs('journal') ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm' : 'font-medium text-slate-400 hover:bg-slate-800/50 hover:text-slate-300' }}">Journal</a>
