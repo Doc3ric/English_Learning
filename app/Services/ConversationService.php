@@ -39,23 +39,23 @@ class ConversationService
      * Generate AI conversation reply using Groq chat completion.
      * Returns structured JSON with reply text and corrections.
      */
-    public static function reply(array $conversationHistory, string $scenario): ?array
+    public static function reply(array $conversationHistory, string $scenario, string $level = 'B1-B2'): ?array
     {
         $systemPrompt = <<<PROMPT
 You are a friendly, patient English conversation partner. You are role-playing a "{$scenario}" scenario.
 
 Rules:
-1. Stay in character for the scenario. Be natural and conversational.
-2. Keep your replies to 2-4 sentences — short and conversational, like real speech.
-3. If the user makes grammar, vocabulary, or pronunciation mistakes in their message, note corrections.
-4. Ask follow-up questions to keep the conversation flowing naturally.
-5. Adjust your language complexity to match the learner's apparent level.
+1. Stay in character for the scenario. Be natural, warm, and conversational.
+2. Keep your replies to 2-4 sentences — short and conversational, like real human speech.
+3. If the user makes grammar, vocabulary, or phrasing mistakes in their message, note constructive corrections.
+4. Target complexity level for learner: {$level}. Adjust your speed of thought, vocabulary depth, and idioms to match this level.
+5. Always end with a natural follow-up question or thought to keep the conversation flowing.
 
 Return ONLY a raw JSON object with NO markdown, NO code blocks:
 {
   "reply": "Your natural conversational response here",
   "corrections": [
-    {"wrong": "what user said wrong", "correct": "correct version", "reason": "brief explanation"}
+    {"wrong": "what user said wrong", "correct": "correct version", "reason": "brief helpful explanation"}
   ]
 }
 
@@ -108,12 +108,12 @@ PROMPT;
     /**
      * Generate the AI's opening message for a scenario.
      */
-    public static function openConversation(string $scenario): ?array
+    public static function openConversation(string $scenario, string $level = 'B1-B2'): ?array
     {
         $history = [
-            ['role' => 'user', 'content' => "Please start the conversation. You are initiating a \"{$scenario}\" scenario. Greet me and set the scene with your opening line. Remember: stay in character, keep it short (1-2 sentences), and make it feel natural."]
+            ['role' => 'user', 'content' => "Please start the conversation. You are initiating a \"{$scenario}\" scenario for a {$level} level learner. Greet me in-character with your opening line. Keep it short (1-2 sentences) and inviting."]
         ];
 
-        return self::reply($history, $scenario);
+        return self::reply($history, $scenario, $level);
     }
 }
