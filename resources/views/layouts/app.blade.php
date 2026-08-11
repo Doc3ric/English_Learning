@@ -80,7 +80,7 @@
             </header>
             
             @if(isset($fullHeight) && $fullHeight)
-            <div class="flex-1 overflow-hidden flex flex-col">
+            <div class="flex-1 min-h-0 overflow-hidden flex flex-col">
                 {{ $slot }}
             </div>
             @else

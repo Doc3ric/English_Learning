@@ -14,6 +14,7 @@ class ConversationService
     {
         try {
             $response = Http::withToken(env('GROQ_API_KEY'))
+                ->retry(3, 300)
                 ->timeout(30)
                 ->attach('file', file_get_contents($audioPath), 'audio.webm')
                 ->post('https://api.groq.com/openai/v1/audio/transcriptions', [
@@ -74,6 +75,7 @@ PROMPT;
 
         try {
             $response = Http::withToken(env('GROQ_API_KEY'))
+                ->retry(3, 300)
                 ->timeout(30)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => 'llama-3.3-70b-versatile',

@@ -1,8 +1,8 @@
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full min-h-0">
 
     @if($state === 'scenarios')
         {{-- ================ SCENARIO PICKER ================ --}}
-        <div class="flex-1 overflow-y-auto p-8">
+        <div class="flex-1 min-h-0 overflow-y-auto p-8">
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-10">
                     <h2 class="text-3xl font-black text-white tracking-tight mb-2">Choose a Scenario</h2>
@@ -36,7 +36,7 @@
 
     @elseif($state === 'chat')
         {{-- ================ CHAT INTERFACE ================ --}}
-        <div class="flex flex-col h-full overflow-hidden"
+        <div class="flex flex-col h-full min-h-0 overflow-hidden"
              x-data="conversationRecorder()"
              @speak-reply.window="queueSpeak($event.detail.text)">
 
@@ -67,7 +67,7 @@
             </div>
 
             {{-- Messages Area (scrollable) --}}
-            <div class="flex-1 overflow-y-auto px-6 py-4 space-y-5" id="chat-messages">
+            <div class="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-5" id="chat-messages">
 
                 @foreach($messages as $msg)
                     @if($msg['role'] === 'assistant')
