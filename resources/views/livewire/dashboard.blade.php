@@ -192,12 +192,7 @@
                         @foreach($skillProfile as $skillName => $skill)
                             <div>
                                 <div class="flex items-center justify-between mb-1.5">
-                                    <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                                        {{ $skillName }}
-                                        @if($skill['estimated'])
-                                            <span title="Estimated — not directly measured" class="text-slate-500 cursor-help text-[10px]">~</span>
-                                        @endif
-                                    </span>
+                                    <span class="text-xs font-semibold text-slate-300">{{ $skillName }}</span>
                                     <div class="flex items-center gap-2">
                                         @if(isset($weeklyDeltas[$skillName]) && $weeklyDeltas[$skillName] !== null)
                                             @php $delta = $weeklyDeltas[$skillName]; @endphp
@@ -223,20 +218,38 @@
                                              style="width: {{ $skill['score'] }}%;">
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-1.5 mt-1">
+                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                                         <span class="text-[10px] font-bold text-slate-500">{{ $skill['cefr'] }}</span>
                                         <span class="text-[10px] text-slate-600">·</span>
                                         <span class="text-[10px] text-slate-500">{{ $skill['confidence'] }}</span>
-                                        @if($skill['estimated'] && $skill['estimation_note'])
+                                        @if(!empty($skill['measurement_note']))
                                             <span class="text-[10px] text-slate-600">·</span>
-                                            <span class="text-[10px] text-slate-600 italic">{{ $skill['estimation_note'] }}</span>
+                                            <span class="text-[10px] text-slate-600 italic">{{ $skill['measurement_note'] }}</span>
                                         @endif
                                     </div>
-                                @else
-                                    <div class="w-full bg-slate-800/50 rounded-full h-2 flex items-center px-3">
-                                        <span class="text-[10px] text-slate-600 italic">Not enough data yet</span>
+
+                                @elseif(!empty($skill['cannot_measure']))
+                                    {{-- Listening: cannot be measured by any existing activity --}}
+                                    <div class="w-full bg-slate-800/30 border border-slate-800 rounded-lg px-3 py-2 flex items-center gap-2">
+                                        <span class="text-slate-600 text-sm">—</span>
+                                        <span class="text-[10px] text-slate-600 italic">Cannot be measured yet</span>
                                     </div>
-                                    <p class="text-[10px] text-slate-600 mt-1 italic">Complete more sessions to unlock this score</p>
+                                    @if(!empty($skill['estimation_note']))
+                                        <p class="text-[10px] text-slate-700 mt-1 italic">{{ $skill['estimation_note'] }}</p>
+                                    @endif
+
+                                @else
+                                    {{-- Not enough data yet, but will unlock with more sessions --}}
+                                    <div class="w-full bg-slate-800/50 rounded-full h-2 overflow-hidden">
+                                        <div class="h-2 rounded-full bg-slate-700/60 w-full animate-pulse"></div>
+                                    </div>
+                                    <p class="text-[10px] text-slate-600 mt-1 italic">
+                                        @if(!empty($skill['estimation_note']))
+                                            {{ $skill['estimation_note'] }}
+                                        @else
+                                            Complete more sessions to unlock this score
+                                        @endif
+                                    </p>
                                 @endif
                             </div>
                         @endforeach
