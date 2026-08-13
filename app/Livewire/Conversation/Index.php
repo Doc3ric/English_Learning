@@ -25,6 +25,7 @@ class Index extends Component
     public $state = 'scenarios'; // scenarios | chat | recap
     public $totalCorrectionsCount = 0;
     public $inputMode = 'voice'; // voice | text
+    public $sessionAnalysis = []; // computed in finishSession()
 
     public const SCENARIOS = [
         ['id' => 'casual', 'icon' => '☕', 'title' => 'Casual Chat', 'desc' => 'Friendly everyday conversation'],
@@ -203,6 +204,56 @@ class Index extends Component
             Auth::user()->addXp(50);
         }
         \App\Services\RecommendationEngineService::logAndComplete(Auth::id() ?? 1, 'conversation', $this->scenario, 600);
+
+        // ── Build post-session analysis from in-memory messages ───────────────
+        // Corrections are stored on assistant messages (the turn that follows each user turn).
+        $userTurns      = 0;
+        $turnsWithErrors = 0;
+        $byRule         = []; // ['rule' => [...examples]]
+
+        foreach ($this->messages as $msg) {
+            if ($msg['role'] === 'assistant') {
+                // Each assistant message represents a reviewed user turn
+                $corrections = $msg['corrections'] ?? [];
+                $userTurns++;
+
+                if (!empty($corrections)) {
+                    $turnsWithErrors++;
+                    foreach ($corrections as $c) {
+                        $rule = ucfirst(trim($c['rule'] ?? $c['reason'] ?? 'Grammar'));
+                        if (!isset($byRule[$rule])) {
+                            $byRule[$rule] = ['count' => 0, 'examples' => []];
+                        }
+                        $byRule[$rule]['count']++;
+                        if (count($byRule[$rule]['examples']) < 2) {
+                            $byRule[$rule]['examples'][] = [
+                                'wrong'  => $c['wrong']  ?? '',
+                                'correct'=> $c['correct'] ?? '',
+                                'reason' => $c['reason']  ?? '',
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        // Sort rules by frequency descending
+        uasort($byRule, fn($a, $b) => $b['count'] <=> $a['count']);
+
+        $accuracy = $userTurns > 0
+            ? (int) round((($userTurns - $turnsWithErrors) / $userTurns) * 100)
+            : 100;
+
+        $topRule = !empty($byRule) ? array_key_first($byRule) : null;
+
+        $this->sessionAnalysis = [
+            'total_user_turns'  => $userTurns,
+            'turns_with_errors' => $turnsWithErrors,
+            'accuracy'          => $accuracy,
+            'corrections_by_rule' => array_map(fn($rule, $data) => array_merge(['rule' => $rule], $data), array_keys($byRule), array_values($byRule)),
+            'top_rule'          => $topRule,
+        ];
+
         $this->state = 'recap';
     }
 

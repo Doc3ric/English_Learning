@@ -49,58 +49,137 @@
         </div>
 
     @elseif($state === 'recap')
-        {{-- ================ SESSION RECAP ================ --}}
-        <div class="flex-1 min-h-0 overflow-y-auto p-8">
-            <div class="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 rounded-full bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-3xl mx-auto mb-4">🏆</div>
-                    <h2 class="text-2xl font-black text-white tracking-tight mb-1">Session Summary</h2>
-                    <p class="text-slate-400 text-sm">Great practice! Here is your performance overview for <strong>{{ $scenario }}</strong>.</p>
+        {{-- ================ POST-SESSION ANALYSIS (Phase 19) ================ --}}
+        @php
+            $analysis     = $sessionAnalysis;
+            $accuracy     = $analysis['accuracy']          ?? 100;
+            $totalTurns   = $analysis['total_user_turns']  ?? 0;
+            $errorTurns   = $analysis['turns_with_errors'] ?? 0;
+            $cleanTurns   = $totalTurns - $errorTurns;
+            $byRule       = $analysis['corrections_by_rule'] ?? [];
+            $topRule      = $analysis['top_rule']           ?? null;
+
+            $accuracyColor = $accuracy >= 80 ? 'text-emerald-400' : ($accuracy >= 60 ? 'text-sky-400' : ($accuracy >= 40 ? 'text-amber-400' : 'text-red-400'));
+            $accuracyBg    = $accuracy >= 80 ? 'from-emerald-500/20 to-teal-500/10 border-emerald-500/30' : ($accuracy >= 60 ? 'from-sky-500/20 to-blue-500/10 border-sky-500/30' : ($accuracy >= 40 ? 'from-amber-500/20 to-yellow-500/10 border-amber-500/30' : 'from-red-500/20 to-rose-500/10 border-red-500/30'));
+            $accuracyLabel = $accuracy >= 80 ? 'Excellent accuracy' : ($accuracy >= 60 ? 'Good — keep practicing' : ($accuracy >= 40 ? 'Developing — focus on top errors' : 'Needs work — review your errors below'));
+        @endphp
+
+        <div class="flex-1 min-h-0 overflow-y-auto p-6 sm:p-8">
+            <div class="max-w-2xl mx-auto space-y-5">
+
+                {{-- ── HEADER ──────────────────────────────────────────────── --}}
+                <div class="text-center pb-2">
+                    <h2 class="text-2xl font-black text-white tracking-tight mb-1">Session Analysis</h2>
+                    <p class="text-slate-400 text-sm">{{ $scenario }} · {{ $targetLevel }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-8">
-                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 text-center">
-                        <span class="block text-2xl font-black text-violet-400">{{ count($messages) }}</span>
-                        <span class="text-xs text-slate-400 font-medium">Messages Exchanged</span>
-                    </div>
-                    <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 text-center">
-                        <span class="block text-2xl font-black text-amber-400">{{ $totalCorrectionsCount }}</span>
-                        <span class="text-xs text-slate-400 font-medium">Mistakes Saved to Tracker</span>
+                {{-- ── ACCURACY SCORE CARD ─────────────────────────────────── --}}
+                <div class="bg-gradient-to-br {{ $accuracyBg }} border rounded-2xl p-6 text-center">
+                    <div class="{{ $accuracyColor }} text-6xl font-black tracking-tight mb-1">{{ $accuracy }}%</div>
+                    <p class="text-sm font-semibold text-slate-300 mb-3">{{ $accuracyLabel }}</p>
+                    <div class="flex items-center justify-center gap-6 text-xs text-slate-400">
+                        <span>🎯 <strong class="text-white">{{ $totalTurns }}</strong> turns reviewed</span>
+                        <span>✅ <strong class="text-emerald-400">{{ $cleanTurns }}</strong> clean</span>
+                        <span>⚠️ <strong class="text-amber-400">{{ $errorTurns }}</strong> with errors</span>
                     </div>
                 </div>
 
-                @if($totalCorrectionsCount > 0)
-                    <div class="mb-8">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Corrections Logged To Practice</h4>
-                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                            @foreach($messages as $msg)
-                                @if(!empty($msg['corrections']))
-                                    @foreach($msg['corrections'] as $c)
-                                        <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs">
-                                            <span class="text-red-400 line-through font-medium">{{ $c['wrong'] ?? '' }}</span>
-                                            <span class="text-slate-500 mx-1">→</span>
-                                            <span class="text-emerald-400 font-bold">{{ $c['correct'] ?? '' }}</span>
-                                            @if(!empty($c['reason']))
-                                                <p class="text-slate-400 text-[11px] mt-1">{{ $c['reason'] }}</p>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                @endif
-                            @endforeach
+                @if($accuracy === 100 && $totalTurns > 0)
+                    {{-- Perfect session --}}
+                    <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 text-center">
+                        <div class="text-4xl mb-2">🏆</div>
+                        <h3 class="text-base font-bold text-emerald-400 mb-1">Perfect Session!</h3>
+                        <p class="text-xs text-slate-400">The AI found no grammar errors in any of your turns. Excellent work.</p>
+                    </div>
+
+                @elseif(!empty($byRule))
+
+                    {{-- ── TOP ERROR THIS SESSION ───────────────────────────── --}}
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">🔥 Most Frequent Error This Session</span>
                         </div>
+
+                        @php $top = $byRule[0]; @endphp
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <h3 class="text-lg font-black text-white">{{ $top['rule'] }}</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">{{ $top['count'] }} {{ $top['count'] === 1 ? 'error' : 'errors' }} this session</p>
+                            </div>
+                            <span class="text-3xl font-black text-amber-400/30">{{ $top['count'] }}×</span>
+                        </div>
+
+                        {{-- Examples for top rule --}}
+                        @foreach($top['examples'] as $ex)
+                            <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3.5 mb-2">
+                                <div class="flex items-start gap-2 text-sm">
+                                    <span class="text-red-400 line-through font-medium flex-1">{{ $ex['wrong'] }}</span>
+                                    <span class="text-slate-600 mx-1 flex-shrink-0">→</span>
+                                    <span class="text-emerald-400 font-bold flex-1">{{ $ex['correct'] }}</span>
+                                </div>
+                                @if(!empty($ex['reason']))
+                                    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">{{ $ex['reason'] }}</p>
+                                @endif
+                            </div>
+                        @endforeach
+
+                        <a href="{{ route('mistakes.practice', ['category' => $top['rule']]) }}"
+                           class="mt-3 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-sm font-bold transition-colors">
+                            ⚡ Fix {{ $top['rule'] }} Now →
+                        </a>
+                    </div>
+
+                    {{-- ── ALL OTHER ERRORS BY RULE ─────────────────────────── --}}
+                    @if(count($byRule) > 1)
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">All Corrections This Session</h4>
+                            <div class="space-y-4">
+                                @foreach($byRule as $ruleData)
+                                    <div class="{{ !$loop->first ? 'pt-4 border-t border-slate-800' : '' }}">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-bold text-slate-300">{{ $ruleData['rule'] }}</span>
+                                            <span class="text-[10px] font-bold text-slate-500 bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full">{{ $ruleData['count'] }}×</span>
+                                        </div>
+                                        @foreach($ruleData['examples'] as $ex)
+                                            <div class="flex items-center gap-2 text-xs bg-slate-800/40 rounded-lg px-3 py-2 mb-1.5">
+                                                <span class="text-red-400 line-through">{{ $ex['wrong'] }}</span>
+                                                <span class="text-slate-600">→</span>
+                                                <span class="text-emerald-400 font-semibold">{{ $ex['correct'] }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                @else
+                    <div class="text-center py-4 text-slate-500 text-sm">
+                        No correction data available for this session.
                     </div>
                 @endif
 
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('mistakes.practice') }}" class="flex-1 text-center ds-btn ds-btn-primary py-3">
-                        ⚡ Practice Weaknesses
-                    </a>
+                {{-- ── ACTION BUTTONS ───────────────────────────────────────── --}}
+                <div class="flex items-center gap-3 pt-1 pb-4">
+                    @if($topRule)
+                        <a href="{{ route('mistakes.practice', ['category' => $topRule]) }}"
+                           class="flex-1 text-center ds-btn ds-btn-primary py-3">
+                            ⚡ Fix {{ $topRule }}
+                        </a>
+                    @else
+                        <a href="{{ route('mistakes') }}"
+                           class="flex-1 text-center ds-btn ds-btn-primary py-3">
+                            📋 View All Mistakes
+                        </a>
+                    @endif
                     <button wire:click="newConversation" class="flex-1 ds-btn ds-btn-secondary py-3">
-                        💬 Start New Scenario
+                        💬 New Scenario
                     </button>
                 </div>
+
             </div>
         </div>
+
 
     @elseif($state === 'chat')
         {{-- ================ CHAT INTERFACE ================ --}}
