@@ -53,10 +53,10 @@ Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text â€
 PROMPT;
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(60)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model' => 'llama-3.3-70b-versatile',
+                    'model' => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages' => [
                         [
@@ -74,7 +74,11 @@ PROMPT;
                 $raw = $response->json()['choices'][0]['message']['content'] ?? null;
                 if (!$raw) return null;
 
-                $data = json_decode($raw, true);
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
                 if (!$data) return null;
 
                 // Normalize: Groq sometimes returns explanation as an array of bullet strings
@@ -128,10 +132,10 @@ PROMPT;
         $prompt = "Rewrite the following English text to sound {$styleDesc}. Keep the same meaning and approximate length. Return ONLY the rewritten text â€” no explanations, no labels, no extra formatting.\n\nOriginal text:\n\"{$correctedText}\"";
 
         try {
-            $response = \Illuminate\Support\Facades\Http::withToken(env('GROQ_API_KEY'))
+            $response = \Illuminate\Support\Facades\Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(45)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'    => 'llama-3.3-70b-versatile',
+                    'model'    => config('services.groq.model', 'groq/compound'),
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are an expert English writing coach. Return only the rewritten text, nothing else.'],
                         ['role' => 'user',   'content' => $prompt],

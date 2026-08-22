@@ -52,10 +52,10 @@ Return ONLY a raw JSON object with NO markdown, NO code blocks, NO extra text �
 PROMPT;
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(60)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'           => 'llama-3.3-70b-versatile',
+                    'model'           => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages'        => [
                         [
@@ -70,9 +70,14 @@ PROMPT;
                 ]);
 
             if ($response->successful()) {
-                $raw  = $response->json()['choices'][0]['message']['content'] ?? null;
-                $data = $raw ? json_decode($raw, true) : null;
+                $raw = $response->json()['choices'][0]['message']['content'] ?? null;
+                if (!$raw) return null;
 
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
                 if (!$data) return null;
 
                 // Normalise: article might come back as an array of paragraphs
@@ -161,10 +166,10 @@ Return ONLY a raw JSON object — no markdown, no code blocks, just JSON:
 PROMPT;
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(60)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'           => 'llama-3.3-70b-versatile',
+                    'model'           => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages'        => [
                         [
@@ -179,9 +184,14 @@ PROMPT;
                 ]);
 
             if ($response->successful()) {
-                $raw  = $response->json()['choices'][0]['message']['content'] ?? null;
-                $data = $raw ? json_decode($raw, true) : null;
+                $raw = $response->json()['choices'][0]['message']['content'] ?? null;
+                if (!$raw) return null;
 
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
                 if (!$data) return null;
 
                 // Normalise arrays — Groq occasionally returns strings
@@ -266,10 +276,10 @@ Return ONLY a raw JSON object — no markdown, no code blocks, just JSON matchin
 PROMPT;
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(60)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model'           => 'llama-3.3-70b-versatile',
+                    'model'           => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages'        => [
                         [
@@ -284,8 +294,14 @@ PROMPT;
                 ]);
 
             if ($response->successful()) {
-                $raw  = $response->json()['choices'][0]['message']['content'] ?? null;
-                $data = $raw ? json_decode($raw, true) : null;
+                $raw = $response->json()['choices'][0]['message']['content'] ?? null;
+                if (!$raw) return null;
+
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
 
                 if (!$data || empty($data['questions']) || !is_array($data['questions'])) {
                     return null;

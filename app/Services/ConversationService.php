@@ -89,11 +89,11 @@ PROMPT;
         }
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->retry(3, 300)
                 ->timeout(30)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model' => 'llama-3.3-70b-versatile',
+                    'model' => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages' => $messages,
                 ]);
@@ -102,7 +102,11 @@ PROMPT;
                 $raw = $response->json()['choices'][0]['message']['content'] ?? null;
                 if (!$raw) return null;
 
-                $data = json_decode($raw, true);
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
                 if (!$data || !isset($data['reply'])) return null;
 
                 if (!isset($data['corrections']) || !is_array($data['corrections'])) {

@@ -85,10 +85,10 @@ Return the response strictly as a JSON object matching this structure (do NOT wr
 Make sure to provide exactly 5 questions. The correct_answer field must be exactly one of 'A', 'B', 'C', or 'D'.";
 
         try {
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
                 ->timeout(60)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model' => 'llama-3.3-70b-versatile',
+                    'model' => config('services.groq.model', 'groq/compound'),
                     'response_format' => ['type' => 'json_object'],
                     'messages' => [
                         [
@@ -103,9 +103,18 @@ Make sure to provide exactly 5 questions. The correct_answer field must be exact
                 ]);
 
             if ($response->successful()) {
-                $result = $response->json();
-                $content = $result['choices'][0]['message']['content'];
-                $data = json_decode($content, true);
+                $raw = $response->json()['choices'][0]['message']['content'] ?? null;
+                if (!$raw) {
+                    session()->flash('error', 'Empty API response.');
+                    $this->isGenerating = false;
+                    return;
+                }
+
+                $raw = trim($raw);
+                $raw = preg_replace('/^```(?:json)?\s*/i', '', $raw);
+                $raw = preg_replace('/\s*```$/', '', $raw);
+
+                $data = json_decode(trim($raw), true);
 
                 if ($data && isset($data['title']) && isset($data['content']) && isset($data['questions'])) {
                     $maxOrder = GrammarLesson::max('order_index') ?? 0;
