@@ -89,14 +89,26 @@ PROMPT;
         }
 
         try {
-            $response = Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
-                ->retry(3, 300)
+            $primaryModel  = config('services.groq.model', 'groq/compound');
+            $fallbackModel = config('services.groq.fallback_model', 'groq/compound-mini');
+
+            $makeRequest = fn(string $model) => Http::withToken(config('services.groq.key', env('GROQ_API_KEY')))
+                ->retry(2, 300)
                 ->timeout(30)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
-                    'model' => config('services.groq.model', 'groq/compound'),
+                    'model'           => $model,
                     'response_format' => ['type' => 'json_object'],
-                    'messages' => $messages,
+                    'messages'        => $messages,
                 ]);
+
+            $response = $makeRequest($primaryModel);
+
+            // Automatic fallback if rate-limited (429)
+            if ($response->status() === 429 && $fallbackModel !== $primaryModel) {
+                Log::info('Groq rate limit hit, falling back', ['from' => $primaryModel, 'to' => $fallbackModel]);
+                sleep(1);
+                $response = $makeRequest($fallbackModel);
+            }
 
             if ($response->successful()) {
                 $raw = $response->json()['choices'][0]['message']['content'] ?? null;

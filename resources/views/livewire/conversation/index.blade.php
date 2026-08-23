@@ -314,7 +314,7 @@
             <div class="flex-shrink-0 bg-slate-900 border-t border-slate-800 px-6 py-4 z-10">
 
                 {{-- Hidden Livewire file input --}}
-                <input type="file" wire:model="audioFile" x-ref="audioInput" class="hidden" accept="audio/*" />
+                <input type="file" id="audio-file-input" name="audioFile" wire:model="audioFile" x-ref="audioInput" class="hidden" accept="audio/*" autocomplete="off" />
 
                 {{-- Input Mode Switcher --}}
                 <div class="flex items-center justify-between mb-3 max-w-md mx-auto">
@@ -379,7 +379,8 @@
                 {{-- Keyboard Text Mode --}}
                 <div x-show="inputMode === 'text'" class="max-w-2xl mx-auto">
                     <form wire:submit.prevent="sendTextMessage" class="flex gap-2">
-                        <input type="text" wire:model="userTextInput" placeholder="Type your English response here..."
+                        <input type="text" id="conversation-text-input" name="userTextInput" wire:model="userTextInput" placeholder="Type your English response here..."
+                               autocomplete="off"
                                class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-violet-500" />
                         <button type="submit" wire:loading.attr="disabled"
                                 class="px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors cursor-pointer flex items-center gap-1.5">

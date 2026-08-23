@@ -36,8 +36,9 @@ return [
     ],
 
     'groq' => [
-        'key'   => env('GROQ_API_KEY'),
-        'model' => env('GROQ_MODEL', 'groq/compound'),
+        'key'            => env('GROQ_API_KEY'),
+        'model'          => env('GROQ_MODEL', 'groq/compound'),
+        'fallback_model' => env('GROQ_FALLBACK_MODEL', 'groq/compound-mini'),
     ],
 
 ];
